@@ -7,4 +7,10 @@
     <string name="home">home</string>
     <string name="compose">Compose</string>
     <string name="profile">Profile</string>
+    <string name="image_preview_of_picture_about_to_be_posted">image preview of picture about to be posted</string>
+    <string name="take_picture">Take Picture</string>
+    <string name="add_a_description">Add a description…</string>
+    <string name="homemade">Homemade</string>
+    <string name="restaurant">Restaurant</string>
+    <string name="next">Next</string>
 </resources>
