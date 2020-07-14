@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.mervynm.nom.fragments.HomeFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,15 +40,15 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationBar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Fragment fragment;
+                Fragment fragment = new HomeFragment();
                 if (item.getItemId() == R.id.action_home) {
-
+                    fragment = new HomeFragment();
                 } else if (item.getItemId() == R.id.action_compose) {
-
+                    fragment = new HomeFragment();
                 } else if (item.getItemId() == R.id.action_profile) {
-
+                    fragment = new HomeFragment();
                 }
-                //fragmentManager.beginTransaction().replace(R.id.frameLayoutContainer, fragment).commit();
+                fragmentManager.beginTransaction().replace(R.id.frameLayoutContainer, fragment).commit();
                 return true;
             }
         });
