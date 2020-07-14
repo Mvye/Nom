@@ -8,7 +8,7 @@
     tools:context=".fragments.ComposeFragment">
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/imageViewPicture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
@@ -27,12 +27,12 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+        app:layout_constraintTop_toBottomOf="@+id/imageViewPicture"/>
     <EditText
-        android:id="@+id/editTextTextPersonName"
+        android:id="@+id/editTextDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="75dp"
+        android:layout_marginTop="50dp"
         android:ems="10"
         android:hint="@string/add_a_description"
         android:inputType="textMultiLine"
@@ -45,14 +45,14 @@
         android:id="@+id/switchHomemade"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="75dp"
+        android:layout_marginTop="50dp"
         android:text="@string/homemade"
         android:textOff="@string/restaurant"
         android:textOn="@string/homemade"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.50"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextDescription" />
     <Button
         android:id="@+id/buttonNext"
         android:layout_width="wrap_content"

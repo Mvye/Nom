@@ -13,4 +13,8 @@
     <string name="homemade">Homemade</string>
     <string name="restaurant">Restaurant</string>
     <string name="next">Next</string>
+    <string name="enter_location">Enter location</string>
+    <string name="enter_recipe_link">Enter recipe link</string>
+    <string name="enter_price">Enter price</string>
+    <string name="post">Post</string>
 </resources>

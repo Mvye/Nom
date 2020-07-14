@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 else if (item.getItemId() == R.id.action_profile) {
                     fragment = new HomeFragment();
                 }
-                fragmentManager.beginTransaction().replace(R.id.frameLayoutContainer, fragment).commit();
+                fragmentManager.beginTransaction().replace(R.id.frameLayoutContainer, fragment).addToBackStack("").commit();
                 return true;
             }
         });
