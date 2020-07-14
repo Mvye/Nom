@@ -4,4 +4,7 @@
     <string name="password">password</string>
     <string name="login">Login</string>
     <string name="sign_up">Sign Up</string>
+    <string name="home">home</string>
+    <string name="compose">Compose</string>
+    <string name="profile">Profile</string>
 </resources>
