@@ -28,48 +28,35 @@ Social media app centered around food. Users can take and share pictures of thei
 
 **Required Must-have Stories**
 
-* 1. User can take a picture with the app
-* 2. User can make posts with descriptions
-    * Descriptions can be locations (maybe use google places api?)
-    * Descriptions can be recipes (links or as text)
-    * Descriptions can have price 
-    * Descriptions can have a description of the food, maybe what's written in the description can be searchable.
-* 3. Users can like other people's posts
-    * Posts have buttons that let you "like" them
-* 4. Users can search for other people's posts
-* 5. Users can view the posts they've made
-* 6. Clicking on a post will open up a detailed view
-    * Shows posts likes and full description
+1. User can take pictures with the app
+2. User can make posts 
+    a. Posts are required to have an image, description, and (new idea) boolean representing whether or not it’s homemade
+    b. Posts can optionally have price, location (if it’s not homemade), and recipe (if it’s homemade)
+    c. Posts can optionally have tags that can help with searching, like if it’s spicy, sweet, sour, Mexican, healthy [I’m thinking this could be an Array of Strings]
+3. Users can like other user’s posts (potentially should be a stretch feature?)
+4. User can search for posts via tags (using queryManager), sorting home feed (optional, backup complex algorithm)
+5. There’s three different main views (fragments) accessible with bottom nav bar
+    a. HomeFeed -  list of posts made by user’s the current user is following and the user
+    b. NewPost - allows user to take a picture and add a description. Can add optional location, price, and recipe. 
+    c. Profile - shows a user’s profile including their username, profile picture (stretch story?), as well as a list of posts they’ve made
+6. User can double tap to like a post (iffy on this), User can scroll to refresh HomeFeed
+7. [Here would be stories that incorporate external libraries for visual polish and animations]
 
 **Optional Nice-to-have Stories**
 
-* S1. Users can follow other users
-* S2. Users have a feed where followed user's stories show up
-* S3. Users can edit their posts
+* 1. User can edit their own posts
+* 2. User can click on a post for a detailed post view
+* 3. User can click on a posts user’s profile picture to go to their profile
+* 4. Allow user to choose an image from gallery when making a post
 
 ### 2. Screen Archetypes
 
-* Home page with buttons that allow you to view your profile, make a new post, and search
-   * 5
-   * 4
-   * 3
-   * 1
-   * S2
-       * 6
-* Profile
-   * 5
-   * S3
-* New post
-    * 2
-    * 1
-* Search
-    * 6
-    * 4
-    * 3
-    * S1
-* Detailed Post view
-    * 6
-    * 3
+* LoginActivity
+* MainActivity with bottom navigation bar
+* HomeFragment
+* NewPostFragment1
+* NewPostFragment2
+* ProfileFragment
 
 ### 3. Navigation
 
@@ -77,7 +64,6 @@ Social media app centered around food. Users can take and share pictures of thei
 
 * Profile
 * New Post
-* Search
 * Home
 
 **Flow Navigation** (Screen to Screen)
@@ -85,39 +71,70 @@ Social media app centered around food. Users can take and share pictures of thei
 * Home
    * Profile
    * New Post
-   * Search
-* Search
-   * Detailed Post View
-   * Home
-   * New Post
-   * Profile
 * New Post
     * Camera
-    * Home (new post appears on homepage after making it)
+    * Home (cancel)
+    * New Post2
+* New Post 2
+    * Home (after posting the post, brings you to home)
 * Profile
-    * Detailed Post View
     * Home 
     * New Post
-    * Search
-* Detailed Post View
-    * Home
-    * New Post
-    * Search
-    * Profile
 
 ## Wireframes
-[Add picture of your hand sketched wireframes in this section]
+[Must be Updated]
+[]()
 <img src="https://i.imgur.com/Q3num9P.jpg" width=600>
-
-### [BONUS] Digital Wireframes & Mockups
-
-### [BONUS] Interactive Prototype
 
 ## Schema 
 [This section will be completed in Unit 9]
 ### Models
-[Add table of models]
+**Posts**
+| Property    | Type   | Description                             |
+| ----------- | ------ | --------------------------------------  |
+| objectId    | String | unique id for the user's post           |
+| author      | Pointer to User |  post author                   |
+| image       | File   | image that user takes/posts             |
+| description | String | description of food/recipe              |
+| tags        | Array  | an array of strings that represent tags |
+| homemade    | Boolean | boolean representing if meal homemade or not |
+| price       | Number | cost/price of the meal                  |
+| likeCount   | Number | amount of likes for post                |
+| location    | JSON Object | location of the meal               |
+| createdAt   | DateTime | date when post is created             | 
+| updatedAt   | DateTime | date when post is updated             |
+
+**User**
+| Property  | Type     | Description                                   |
+| --------- | -------- | --------------------------------------------- |
+| objectId  | String   | unique id of the user                         |
+| username  | String   | unique username of user                       |
+| password  | String   | hidden password of user                       |
+| createdAt | DateTime | date account was created                      |
+| followers | Array | array of pointers to users that follow the users |
+| following | Array | array of pointers to users that the user follows |
+| profileImage | File | user's profile picture                         |
+
+
 ### Networking
-- [Add list of network requests by screen ]
-- [Create basic snippets for each Parse network request]
-- [OPTIONAL: List endpoints if using existing API such as Yelp]
+
+* Home Feed Screen:
+    * (GET) Query posts from User's following list
+    ```java
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+        query.include(Post.KEY_USER, Post.getCurrentUser().getFollowing());
+        query.setLimit(20);
+        query.addDescendingOrder(Post.KEY_CREATED_AT);
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> posts, ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "Issue with getting posts", e);
+                    return;
+                }
+                for (Post post : posts) {
+                    Log.i(TAG, "Post " + post.getDescription() +  ", username " + post.getUser().getUsername());
+                }
+                postAdapter.addAll(posts);
+            }
+        });``` 
