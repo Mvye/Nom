@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.mervynm.nom.fragments.ComposeFragment;
 import com.mervynm.nom.fragments.HomeFragment;
+import com.mervynm.nom.fragments.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
                     fragment = new ComposeFragment();
                 }
                 else if (item.getItemId() == R.id.action_profile) {
-                    fragment = new HomeFragment();
+                    fragment = new ProfileFragment();
                 }
                 fragmentManager.beginTransaction().replace(R.id.frameLayoutContainer, fragment).addToBackStack("").commit();
                 return true;
