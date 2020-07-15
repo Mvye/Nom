@@ -2,6 +2,7 @@ package com.mervynm.nom;
 
 import android.app.Application;
 
+import com.mervynm.nom.models.Post;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
@@ -12,6 +13,7 @@ public class ParseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        ParseObject.registerSubclass(Post.class);
 
         Parse.setLogLevel(Parse.LOG_LEVEL_DEBUG);
 
