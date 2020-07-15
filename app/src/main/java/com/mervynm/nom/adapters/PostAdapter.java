@@ -95,7 +95,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
             if (post.getPrice() == 0) {
                 imageViewPrice.setVisibility(View.GONE);
             }
-            textViewLikeAmount.setText("15 Likes");
+            if (!post.getHomemade()) {
+                imageViewRecipe.setVisibility(View.GONE);
+            }
+            textViewLikeAmount.setText(R.string.tempLikes);
             textViewUsername2.setText(username);
             textViewDescription.setText(post.getDescription());
             textViewCreatedAt.setText(post.getCreatedAt().toString());

@@ -25,4 +25,5 @@
     <string name="like_icon">like icon</string>
     <string name="post_image">post image</string>
     <string name="post">Post</string>
+    <string name="tempLikes">15 Likes</string>
 </resources>
