@@ -3,6 +3,7 @@ package com.mervynm.nom;
 import android.app.Application;
 
 import com.mervynm.nom.models.Post;
+import com.mervynm.nom.models.User;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
@@ -14,6 +15,7 @@ public class ParseApplication extends Application {
     public void onCreate() {
         super.onCreate();
         ParseObject.registerSubclass(Post.class);
+        ParseObject.registerSubclass(User.class);
 
         Parse.setLogLevel(Parse.LOG_LEVEL_DEBUG);
 

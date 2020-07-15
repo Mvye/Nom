@@ -11,11 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.target.Target;
 import com.mervynm.nom.R;
 import com.mervynm.nom.models.Post;
+import com.parse.ParseFile;
 
 import java.util.List;
+import java.util.Objects;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
 
@@ -85,7 +88,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
         }
 
         public void bind(Post post) {
-            imageViewProfilePicture.setVisibility(View.INVISIBLE);
+            Glide.with(context).load(Objects.requireNonNull(post.getAuthor().getParseFile("profilePicture")).getUrl())
+                               .transform(new CircleCrop())
+                               .into(imageViewProfilePicture);
             String username = post.getAuthor().getUsername();
             textViewUsername.setText(username);
             Glide.with(context).load(post.getImage().getUrl())
