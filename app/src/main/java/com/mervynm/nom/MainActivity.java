@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.mervynm.nom.fragments.ComposeFragment;
 import com.mervynm.nom.fragments.HomeFragment;
+import com.mervynm.nom.fragments.LogoutDialogFragment;
 import com.mervynm.nom.fragments.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,6 +22,24 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
     BottomNavigationView bottomNavigationBar;
     final FragmentManager fragmentManager = getSupportFragmentManager();
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        View profile = findViewById(R.id.action_profile);
+        profile.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                showLogOutDialog();
+                return true;
+            }
+        });
+    }
+
+    private void showLogOutDialog() {
+        LogoutDialogFragment logoutDialogFragment = new LogoutDialogFragment();
+        logoutDialogFragment.show(fragmentManager, "fragment_logout_dialog");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

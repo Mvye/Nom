@@ -26,4 +26,7 @@
     <string name="post_image">post image</string>
     <string name="post">Post</string>
     <string name="tempLikes">15 Likes</string>
+    <string name="are_you_sure_you_want_to_logout">Are you sure you want to logout?</string>
+    <string name="yes_logout">Yes, Logout</string>
+    <string name="no_stay_signed_in">No, Stay Signed In</string>
 </resources>
