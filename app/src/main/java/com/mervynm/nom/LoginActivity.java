@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -46,7 +47,31 @@ public class LoginActivity extends AppCompatActivity {
         buttonSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                goToMainActivity();
+                signUp();
+            }
+        });
+    }
+
+    private void signUp() {
+        String username = editTextUsername.getText().toString();
+        String password = editTextPassword.getText().toString();
+        ParseUser user = new ParseUser();
+        user.setUsername(username);
+        user.setPassword(password);
+        signUpUser(user);
+    }
+
+    private void signUpUser(ParseUser user) {
+        user.signUpInBackground(new SignUpCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Toast.makeText(LoginActivity.this, "Issue with sign up", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Toast.makeText(LoginActivity.this, "Account created! Sign in with new account", Toast.LENGTH_LONG).show();
+                editTextUsername.setText(null);
+                editTextPassword.setText(null);
             }
         });
     }
