@@ -26,8 +26,21 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        checkIfLoggedIn();
         setupVariables();
         setOnClickListeners();
+    }
+
+    private void checkIfLoggedIn() {
+        if (ParseUser.getCurrentUser() != null) {
+            goToMainActivity();
+        }
+    }
+
+    private void goToMainActivity() {
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+        finish();
     }
 
     private void setupVariables() {
@@ -94,11 +107,5 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private void goToMainActivity() {
-        Intent i = new Intent(this, MainActivity.class);
-        startActivity(i);
-        finish();
     }
 }
