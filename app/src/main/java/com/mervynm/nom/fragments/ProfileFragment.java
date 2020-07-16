@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +15,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.mervynm.nom.R;
+import com.mervynm.nom.models.Post;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
-public class ProfileFragment extends Fragment {
+import java.util.List;
+
+public class ProfileFragment extends HomeFragment {
 
     ImageView imageViewProfilePicture;
     TextView textViewUsername;
@@ -39,9 +47,33 @@ public class ProfileFragment extends Fragment {
         setupVariables(view);
     }
 
-    private void setupVariables(View view) {
+    public void setupVariables(View view) {
         imageViewProfilePicture = view.findViewById(R.id.imageViewProfilePicture);
         textViewUsername = view.findViewById(R.id.textViewUsername);
         recyclerViewPosts = view.findViewById(R.id.recyclerViewPosts);
     }
+
+    @Override
+    protected void queryPosts() {
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+        query.include(Post.KEY_AUTHOR);
+        query.whereEqualTo(Post.KEY_AUTHOR, ParseUser.getCurrentUser());
+        query.setLimit(20);
+        query.addDescendingOrder(Post.KEY_CREATED_AT);
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> postList, ParseException e) {
+                if (e != null) {
+                    Log.e("ProfileFragment", "Issue with getting posts", e);
+                    return;
+                }
+                for (Post post : postList) {
+                    Log.i("ProfileFragment", "Post " + post.getDescription() +  ", username " + post.getAuthor().getUsername() + " ," + post.getPrice());
+                }
+                adapter.clear();
+                adapter.addAll(postList);
+            }
+        });
+    }
+
 }

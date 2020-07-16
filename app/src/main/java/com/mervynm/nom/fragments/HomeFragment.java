@@ -46,25 +46,22 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        setupVariables(view);
-        setupRecyclerView();
+        setupRecyclerView(view);
         queryPosts();
     }
 
-    private void setupVariables(View view) {
+    private void setupRecyclerView(View view) {
         recyclerViewPosts = view.findViewById(R.id.recyclerViewPosts);
-    }
-
-    private void setupRecyclerView() {
         posts = new ArrayList<>();
         adapter = new PostAdapter(getContext(), posts);
         recyclerViewPosts.setAdapter(adapter);
         recyclerViewPosts.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
-    private void queryPosts() {
+    protected void queryPosts() {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_AUTHOR);
+        query.setLimit(20);
         query.addDescendingOrder(Post.KEY_CREATED_AT);
         query.findInBackground(new FindCallback<Post>() {
             @Override
