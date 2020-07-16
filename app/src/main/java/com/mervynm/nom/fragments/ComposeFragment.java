@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -42,6 +43,8 @@ public class ComposeFragment extends Fragment {
     Button buttonNext;
     private File photoFile;
     public String photoFileName = "photo.jpg";
+    String description;
+    Boolean homemade = false;
 
     public ComposeFragment() {}
 
@@ -77,10 +80,18 @@ public class ComposeFragment extends Fragment {
                 launchCamera();
             }
         });
+        switchHomemade.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                homemade = isChecked;
+            }
+        });
         buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                goToMoreInformationComposeFragment();
+                if (checkIfInfoInputted()) {
+                    goToMoreInformationComposeFragment();
+                }
             }
         });
     }
@@ -92,6 +103,17 @@ public class ComposeFragment extends Fragment {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
         if (intent.resolveActivity(getContext().getPackageManager()) != null) {
             startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+        }
+    }
+
+    private boolean checkIfInfoInputted() {
+        description = editTextDescription.getText().toString();
+        if (photoFile != null && !description.equals("")) {
+            return true;
+        }
+        else {
+            Toast.makeText(getContext(), "Missing Picture or Description", Toast.LENGTH_SHORT).show();
+            return false;
         }
     }
 
@@ -107,7 +129,6 @@ public class ComposeFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                //Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                 Uri takenPhotoUri = Uri.fromFile(getPhotoFileUri(photoFileName));
                 Bitmap rawTakenImage = BitmapFactory.decodeFile(takenPhotoUri.getPath());
                 Bitmap resizedBitmap = BitmapScaler.scaleToFitWidth(rawTakenImage, 400);
@@ -120,7 +141,7 @@ public class ComposeFragment extends Fragment {
     }
 
     private void goToMoreInformationComposeFragment() {
-        MoreInformationComposeFragment moreInformationComposeFragment = new MoreInformationComposeFragment();
+        MoreInformationComposeFragment moreInformationComposeFragment = MoreInformationComposeFragment.newInstance(photoFile, description, homemade);
         assert getFragmentManager() != null;
         getFragmentManager().beginTransaction().replace(R.id.frameLayoutContainer, moreInformationComposeFragment).commit();
     }

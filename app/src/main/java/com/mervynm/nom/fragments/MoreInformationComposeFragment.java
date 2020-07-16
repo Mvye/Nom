@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,18 +16,37 @@ import android.widget.EditText;
 
 import com.mervynm.nom.R;
 
+import java.io.File;
+
 public class MoreInformationComposeFragment extends Fragment {
 
     EditText editTextLocation;
     EditText editTextRecipe;
     EditText editTextPrice;
     Button buttonPost;
+    File photoFile;
+    String description;
+    Boolean homemade;
 
     public MoreInformationComposeFragment() {}
+
+    public static MoreInformationComposeFragment newInstance(File photoFile, String description, Boolean homemade) {
+        MoreInformationComposeFragment moreInformationComposeFragment = new MoreInformationComposeFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("image", photoFile);
+        args.putString("description", description);
+        args.putBoolean("homemade", homemade);
+        moreInformationComposeFragment.setArguments(args);
+        return moreInformationComposeFragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        assert getArguments() != null;
+        photoFile = (File) getArguments().getSerializable("image");
+        description = getArguments().getString("description");
+        homemade = getArguments().getBoolean("homemade");
     }
 
     @Override
@@ -52,9 +72,13 @@ public class MoreInformationComposeFragment extends Fragment {
         buttonPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                goToHome();
+                createPost();
             }
         });
+    }
+
+    private void createPost() {
+        goToHome();
     }
 
     private void goToHome() {

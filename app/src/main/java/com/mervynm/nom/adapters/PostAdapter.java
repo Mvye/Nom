@@ -15,7 +15,6 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.target.Target;
 import com.mervynm.nom.R;
 import com.mervynm.nom.models.Post;
-import com.parse.ParseFile;
 
 import java.util.List;
 import java.util.Objects;
