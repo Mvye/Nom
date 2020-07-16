@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -14,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.mervynm.nom.R;
 import com.mervynm.nom.models.Post;
 import com.parse.FindCallback;
@@ -22,6 +23,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ProfileFragment extends HomeFragment {
 
@@ -45,12 +47,21 @@ public class ProfileFragment extends HomeFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupVariables(view);
+        setUpProfileBar();
     }
 
     public void setupVariables(View view) {
         imageViewProfilePicture = view.findViewById(R.id.imageViewProfilePicture);
         textViewUsername = view.findViewById(R.id.textViewUsername);
         recyclerViewPosts = view.findViewById(R.id.recyclerViewPosts);
+    }
+
+    private void setUpProfileBar() {
+        ParseUser user = ParseUser.getCurrentUser();
+        Glide.with(Objects.requireNonNull(getContext())).load(Objects.requireNonNull(user.getParseFile("profilePicture")).getUrl())
+                .transform(new CircleCrop())
+                .into(imageViewProfilePicture);
+        textViewUsername.setText(user.getUsername());
     }
 
     @Override
