@@ -17,6 +17,7 @@ public class Post extends ParseObject {
     public static final String KEY_PRICE = "price";
     public static final String KEY_LIKE_COUNT = "likeCount";
     public static final String KEY_LOCATION = "location";
+    public static final String KEY_RECIPE_URL = "recipeUrl";
 
     public Post() {}
 
@@ -82,5 +83,13 @@ public class Post extends ParseObject {
 
     public void setLocation(ParseObject location) {
         put(KEY_LOCATION, location);
+    }
+
+    public String getKeyRecipeUrl() {
+        return getString(KEY_RECIPE_URL);
+    }
+
+    public void setRecipeUrl(String recipeUrl) {
+        put(KEY_RECIPE_URL, recipeUrl);
     }
 }

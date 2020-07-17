@@ -11,10 +11,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.mervynm.nom.R;
+import com.mervynm.nom.models.Post;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.io.File;
 
@@ -27,6 +34,8 @@ public class MoreInformationComposeFragment extends Fragment {
     File photoFile;
     String description;
     Boolean homemade;
+    String recipeUrl;
+    double priceDouble;
 
     public MoreInformationComposeFragment() {}
 
@@ -72,12 +81,65 @@ public class MoreInformationComposeFragment extends Fragment {
         buttonPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createPost();
+                checkIfInfoInputtedIsCorrect();
             }
         });
     }
 
-    private void createPost() {
+    private void checkIfInfoInputtedIsCorrect() {
+        boolean location = false;
+        boolean recipe = false;
+        boolean price = false;
+        if (!editTextLocation.getText().toString().isEmpty()) {
+            //verify valid location
+        }
+        if (!editTextPrice.getText().toString().isEmpty()) {
+            if (URLUtil.isValidUrl(editTextRecipe.getText().toString())) {
+                recipe = true;
+                recipeUrl = editTextRecipe.getText().toString();
+            }
+            else {
+                Toast.makeText(getContext(), "Invalid recipe URL", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+        if (!editTextPrice.getText().toString().isEmpty()) {
+            priceDouble = Double.parseDouble(editTextPrice.getText().toString());
+            price = true;
+        }
+        createPost(false, recipe, price);
+    }
+
+    private void createPost(boolean location, boolean recipe, boolean price) {
+        Post post = new Post();
+        post.setAuthor(ParseUser.getCurrentUser());
+        post.setImage(new ParseFile(photoFile));
+        post.setKeyDescription(description);
+        post.setHomemade(homemade);
+        if (location) {
+            //code to set location
+        }
+        if (recipe) {
+            post.setRecipeUrl(recipeUrl);
+        }
+        if (price) {
+            post.setPrice(priceDouble);
+        }
+        savePost(post);
+    }
+
+    private void savePost(Post post) {
+        post.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Log.e("MoreInfoCompose", "Issue saving post", e);
+                    Toast.makeText(getContext(), "Issue saving post", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Log.i("MoreInfoCompose", "Post successsfully saved");
+            }
+        });
         goToHome();
     }
 
