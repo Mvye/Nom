@@ -93,7 +93,7 @@ public class MoreInformationComposeFragment extends Fragment {
         if (!editTextLocation.getText().toString().isEmpty()) {
             //verify valid location
         }
-        if (!editTextPrice.getText().toString().isEmpty()) {
+        if (!editTextRecipe.getText().toString().isEmpty()) {
             if (URLUtil.isValidUrl(editTextRecipe.getText().toString())) {
                 recipe = true;
                 recipeUrl = editTextRecipe.getText().toString();
