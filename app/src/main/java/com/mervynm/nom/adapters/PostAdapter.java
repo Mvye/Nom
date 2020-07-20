@@ -127,7 +127,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
         }
 
         private void onPriceClick() {
-            Toast.makeText(context, "you have pressed price at position " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
+            Post clickedPost = posts.get(getAdapterPosition());
+            Toast.makeText(context, "The price is $" + clickedPost.getPrice(), Toast.LENGTH_SHORT).show();
         }
 
         private void onRecipeClick() {
