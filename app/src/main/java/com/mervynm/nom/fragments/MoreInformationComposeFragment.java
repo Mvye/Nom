@@ -24,6 +24,8 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MoreInformationComposeFragment extends Fragment {
 
@@ -104,8 +106,17 @@ public class MoreInformationComposeFragment extends Fragment {
             }
         }
         if (!editTextPrice.getText().toString().isEmpty()) {
-            priceDouble = Double.parseDouble(editTextPrice.getText().toString());
-            price = true;
+            String pattern = "^([1-9]{1}[0-9]*|0{0,2})(\\.?)(\\d\\d?)$";
+            Pattern r = Pattern.compile(pattern);
+            Matcher m = r.matcher(editTextPrice.getText().toString());
+            if (m.find()) {
+                priceDouble = Double.parseDouble(editTextPrice.getText().toString());
+                price = true;
+            }
+            else {
+                Toast.makeText(getContext(), "Invalid price, please enter a valid price", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
         createPost(false, recipe, price);
     }
