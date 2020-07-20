@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -73,6 +74,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            setupVariables(itemView);
+            setupOnClickListeners();
+        }
+
+        private void setupVariables(View itemView) {
             imageViewProfilePicture = itemView.findViewById(R.id.imageViewProfilePicture);
             textViewUsername = itemView.findViewById(R.id.textViewUsername);
             imageViewPostImage = itemView.findViewById(R.id.imageViewPostImage);
@@ -84,6 +90,48 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
             textViewUsername2 = itemView.findViewById(R.id.textViewUsername2);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
             textViewCreatedAt = itemView.findViewById(R.id.textViewCreatedAt);
+        }
+
+        private void setupOnClickListeners() {
+            imageViewLike.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onLikeClick();
+                }
+            });
+            imageViewLocation.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onLocationClick();
+                }
+            });
+            imageViewPrice.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onPriceClick();
+                }
+            });
+            imageViewRecipe.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    onRecipeClick();
+                }
+            });
+        }
+
+        private void onLikeClick() {
+            Toast.makeText(context, "you have pressed like at position " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
+        }
+
+        private void onLocationClick() {
+        }
+
+        private void onPriceClick() {
+            Toast.makeText(context, "you have pressed price at position " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
+        }
+
+        private void onRecipeClick() {
+            Toast.makeText(context, "you have pressed recipe at position " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
         }
 
         public void bind(Post post) {
