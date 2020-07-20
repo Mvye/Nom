@@ -1,6 +1,8 @@
 package com.mervynm.nom.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,8 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.target.Target;
 import com.mervynm.nom.R;
 import com.mervynm.nom.models.Post;
+import com.parse.ParseException;
+import com.parse.SaveCallback;
 
 import java.util.List;
 import java.util.Objects;
@@ -119,8 +123,31 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
             });
         }
 
+        @SuppressLint("DefaultLocale")
         private void onLikeClick() {
-            Toast.makeText(context, "you have pressed like at position " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
+            Post clickedPost = posts.get(getAdapterPosition());
+            int likeCount = clickedPost.getLikeCount();
+            if (!clickedPost.getLikedByCurrentUser()) {
+                likeCount += 1;
+                clickedPost.setLikeCount(likeCount);
+                imageViewLike.setImageResource(R.drawable.ic_baseline_favorite_24);
+                clickedPost.setLikedByCurrentUser(true);
+            }
+            else {
+                likeCount -= 1;
+                clickedPost.setLikeCount(likeCount);
+                imageViewLike.setImageResource(R.drawable.ic_baseline_favorite_border_24);
+                clickedPost.setLikedByCurrentUser(false);
+            }
+            textViewLikeAmount.setText(String.format("%d Likes", likeCount));
+            clickedPost.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e != null) {
+                        Log.i("PostAdapter", "Error in liking");
+                    }
+                }
+            });
         }
 
         private void onLocationClick() {
@@ -135,6 +162,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
             Toast.makeText(context, "you have pressed recipe at position " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
         }
 
+        @SuppressLint("DefaultLocale")
         public void bind(Post post) {
             Glide.with(context).load(Objects.requireNonNull(post.getAuthor().getParseFile("profilePicture")).getUrl())
                                .transform(new CircleCrop())
@@ -145,13 +173,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
                                .override(Target.SIZE_ORIGINAL)
                                .into(imageViewPostImage);
             imageViewLocation.setVisibility(View.GONE);
+            if (post.getLikedByCurrentUser()) {
+                imageViewLike.setImageResource(R.drawable.ic_baseline_favorite_24);
+            }
+            else {
+                imageViewLike.setImageResource(R.drawable.ic_baseline_favorite_border_24);
+            }
+            textViewLikeAmount.setText(String.format("%d Likes", post.getLikeCount()));
             if (post.getPrice() == 0) {
                 imageViewPrice.setVisibility(View.GONE);
             }
             if (!post.getHomemade()) {
                 imageViewRecipe.setVisibility(View.GONE);
             }
-            textViewLikeAmount.setText(R.string.tempLikes);
             textViewUsername2.setText(username);
             textViewDescription.setText(post.getDescription());
             textViewCreatedAt.setText(post.getCreatedAt().toString());

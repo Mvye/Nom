@@ -15,6 +15,7 @@ public class Post extends ParseObject {
     public static final String KEY_TAGS = "tags";
     public static final String KEY_HOMEMADE = "homemade";
     public static final String KEY_PRICE = "price";
+    public static final String KEY_LIKED_BY_CURRENT_USER = "likedByCurrentUser";
     public static final String KEY_LIKE_COUNT = "likeCount";
     public static final String KEY_LOCATION = "location";
     public static final String KEY_RECIPE_URL = "recipeUrl";
@@ -67,6 +68,14 @@ public class Post extends ParseObject {
 
     public void setPrice(double price) {
         put(KEY_PRICE, price);
+    }
+
+    public Boolean getLikedByCurrentUser() {
+        return getBoolean(KEY_LIKED_BY_CURRENT_USER);
+    }
+
+    public void setLikedByCurrentUser(Boolean likedByCurrentUser) {
+        put(KEY_LIKED_BY_CURRENT_USER, likedByCurrentUser);
     }
 
     public int getLikeCount() {
