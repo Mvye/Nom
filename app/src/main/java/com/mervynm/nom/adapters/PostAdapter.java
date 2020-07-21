@@ -198,7 +198,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
             Glide.with(context).load(post.getImage().getUrl())
                                .override(Target.SIZE_ORIGINAL)
                                .into(imageViewPostImage);
-            imageViewLocation.setVisibility(View.GONE);
+            if (post.getLocation() != null) {
+                imageViewLocation.setVisibility(View.VISIBLE);
+            }
+            else {
+                imageViewLocation.setVisibility(View.GONE);
+            }
             ParseQuery<ParseUser> query = post.getUsersWhoLiked().getQuery();
             query.include("User");
             query.whereEqualTo("objectId", ParseUser.getCurrentUser().getObjectId());
