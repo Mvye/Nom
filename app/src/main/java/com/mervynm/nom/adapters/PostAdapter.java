@@ -18,7 +18,13 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.target.Target;
 import com.mervynm.nom.R;
 import com.mervynm.nom.models.Post;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseRelation;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.List;
@@ -123,31 +129,51 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
             });
         }
 
-        @SuppressLint("DefaultLocale")
         private void onLikeClick() {
-            Post clickedPost = posts.get(getAdapterPosition());
-            int likeCount = clickedPost.getLikeCount();
-            if (!clickedPost.getLikedByCurrentUser()) {
-                likeCount += 1;
-                clickedPost.setLikeCount(likeCount);
-                imageViewLike.setImageResource(R.drawable.ic_baseline_favorite_24);
-                clickedPost.setLikedByCurrentUser(true);
-            }
-            else {
-                likeCount -= 1;
-                clickedPost.setLikeCount(likeCount);
-                imageViewLike.setImageResource(R.drawable.ic_baseline_favorite_border_24);
-                clickedPost.setLikedByCurrentUser(false);
-            }
-            textViewLikeAmount.setText(String.format("%d Likes", likeCount));
-            clickedPost.saveInBackground(new SaveCallback() {
+            final Post clickedPost = posts.get(getAdapterPosition());
+            final boolean[] noIssuesWithSaving = {true};
+            ParseQuery<ParseUser> query = clickedPost.getUsersWhoLiked().getQuery();
+            query.include("User");
+            query.whereEqualTo("objectId", ParseUser.getCurrentUser().getObjectId());
+            query.getFirstInBackground(new GetCallback<ParseUser>() {
                 @Override
-                public void done(ParseException e) {
-                    if (e != null) {
-                        Log.i("PostAdapter", "Error in liking");
+                public void done(ParseUser object, ParseException e) {
+                    if (e == null) {
+                        changeLike(clickedPost, -1);
+                        clickedPost.removeLike(ParseUser.getCurrentUser());
+                    }
+                    else if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
+                        changeLike(clickedPost, 1);
+                        clickedPost.addLike(ParseUser.getCurrentUser());
+                    }
+                    else {
+                        Toast.makeText(context, "Error, cannot like " + e.getCode(), Toast.LENGTH_SHORT).show();
+                        noIssuesWithSaving[0] = false;
                     }
                 }
             });
+            if (noIssuesWithSaving[0]) {
+                clickedPost.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e != null) {
+                            Log.i("PostAdapter", "Error in liking");
+                        }
+                    }
+                });
+            }
+        }
+
+        @SuppressLint("DefaultLocale")
+        private void changeLike(Post clickedPost, int change) {
+            clickedPost.setLikeCount(clickedPost.getLikeCount()+change);
+            if (change == 1) {
+                imageViewLike.setImageResource(R.drawable.ic_baseline_favorite_24);
+            }
+            else {
+                imageViewLike.setImageResource(R.drawable.ic_baseline_favorite_border_24);
+            }
+            textViewLikeAmount.setText(String.format("%d Likes", clickedPost.getLikeCount()));
         }
 
         private void onLocationClick() {
@@ -173,12 +199,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
                                .override(Target.SIZE_ORIGINAL)
                                .into(imageViewPostImage);
             imageViewLocation.setVisibility(View.GONE);
-            if (post.getLikedByCurrentUser()) {
-                imageViewLike.setImageResource(R.drawable.ic_baseline_favorite_24);
-            }
-            else {
-                imageViewLike.setImageResource(R.drawable.ic_baseline_favorite_border_24);
-            }
+            ParseQuery<ParseUser> query = post.getUsersWhoLiked().getQuery();
+            query.include("User");
+            query.whereEqualTo("objectId", ParseUser.getCurrentUser().getObjectId());
+            query.getFirstInBackground(new GetCallback<ParseUser>() {
+                @Override
+                public void done(ParseUser object, ParseException e) {
+                    if (e == null) {
+                        imageViewLike.setImageResource(R.drawable.ic_baseline_favorite_24);
+                    }
+                    else {
+                        imageViewLike.setImageResource(R.drawable.ic_baseline_favorite_border_24);
+                    }
+                }
+            });
             textViewLikeAmount.setText(String.format("%d Likes", post.getLikeCount()));
             if (post.getPrice() == 0) {
                 imageViewPrice.setVisibility(View.GONE);

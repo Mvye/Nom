@@ -1,8 +1,10 @@
 package com.mervynm.nom.models;
 
+import com.parse.Parse;
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -16,6 +18,7 @@ public class Post extends ParseObject {
     public static final String KEY_HOMEMADE = "homemade";
     public static final String KEY_PRICE = "price";
     public static final String KEY_LIKED_BY_CURRENT_USER = "likedByCurrentUser";
+    public static final String KEY_USERS_WHO_LIKED = "usersWhoLiked";
     public static final String KEY_LIKE_COUNT = "likeCount";
     public static final String KEY_LOCATION = "location";
     public static final String KEY_RECIPE_URL = "recipeUrl";
@@ -84,6 +87,20 @@ public class Post extends ParseObject {
 
     public void setLikeCount(int likeCount) {
         put(KEY_LIKE_COUNT, likeCount);
+    }
+
+    public ParseRelation<ParseUser> getUsersWhoLiked() {
+        return getRelation(KEY_USERS_WHO_LIKED);
+    }
+
+    public void addLike(ParseUser user) {
+        getUsersWhoLiked().add(user);
+        saveInBackground();
+    }
+
+    public void removeLike(ParseUser user) {
+        getUsersWhoLiked().remove(user);
+        saveInBackground();
     }
 
     public ParseObject getLocation() {
