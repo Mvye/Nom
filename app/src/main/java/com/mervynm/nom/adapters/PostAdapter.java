@@ -18,26 +18,29 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.target.Target;
 import com.mervynm.nom.R;
 import com.mervynm.nom.models.Post;
-import com.parse.FindCallback;
 import com.parse.GetCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.List;
 import java.util.Objects;
 
-public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
+public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
+
+    public interface OnLocationClickListener {
+        void OnLocationClicked(int position);
+    }
 
     Context context;
     List<Post> posts;
+    OnLocationClickListener locationClickListener;
 
-    public PostAdapter(Context context, List<Post> posts) {
+    public PostAdapter(Context context, List<Post> posts, OnLocationClickListener locationClickListener) {
         this.context = context;
         this.posts = posts;
+        this.locationClickListener = locationClickListener;
     }
 
     @NonNull
@@ -109,12 +112,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
                     onLikeClick();
                 }
             });
-            imageViewLocation.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    onLocationClick();
-                }
-            });
             imageViewPrice.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -176,9 +173,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
             textViewLikeAmount.setText(String.format("%d Likes", clickedPost.getLikeCount()));
         }
 
-        private void onLocationClick() {
-        }
-
         private void onPriceClick() {
             Post clickedPost = posts.get(getAdapterPosition());
             Toast.makeText(context, "The price is $" + clickedPost.getPrice(), Toast.LENGTH_SHORT).show();
@@ -200,6 +194,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder>{
                                .into(imageViewPostImage);
             if (post.getLocation() != null) {
                 imageViewLocation.setVisibility(View.VISIBLE);
+                imageViewLocation.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        locationClickListener.OnLocationClicked(getAdapterPosition());
+                    }
+                });
             }
             else {
                 imageViewLocation.setVisibility(View.GONE);

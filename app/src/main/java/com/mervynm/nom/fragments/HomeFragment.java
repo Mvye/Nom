@@ -53,9 +53,19 @@ public class HomeFragment extends Fragment {
     private void setupRecyclerView(View view) {
         recyclerViewPosts = view.findViewById(R.id.recyclerViewPosts);
         posts = new ArrayList<>();
-        adapter = new PostAdapter(getContext(), posts);
+        PostAdapter.OnLocationClickListener onLocationClickListener = new PostAdapter.OnLocationClickListener() {
+            @Override
+            public void OnLocationClicked(int position) {
+                createLocationDialog();
+            }
+        };
+        adapter = new PostAdapter(getContext(), posts, onLocationClickListener);
         recyclerViewPosts.setAdapter(adapter);
         recyclerViewPosts.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    private void createLocationDialog() {
+        Toast.makeText(getContext(), "This should open LocationDialog", Toast.LENGTH_SHORT).show();
     }
 
     protected void queryPosts() {
