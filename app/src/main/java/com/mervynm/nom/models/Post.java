@@ -107,7 +107,7 @@ public class Post extends ParseObject {
         return getParseObject(KEY_LOCATION);
     }
 
-    public void setLocation(ParseObject location) {
+    public void setLocation(Location location) {
         put(KEY_LOCATION, location);
     }
 

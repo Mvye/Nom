@@ -8,19 +8,18 @@
     android:backgroundTint="@color/white"
     tools:context=".fragments.MoreInformationComposeFragment" >
 
-    <EditText
-        android:id="@+id/editTextLocation"
+    <TextView
+        android:id="@+id/textViewLocation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="125dp"
         android:ems="10"
         android:hint="@string/enter_location"
-        android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:importantForAutofill="no" />
+        />
     <fragment
         android:id="@+id/autocomplete_fragment"
         android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
@@ -28,7 +27,8 @@
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/places_autocomplete_fragment" />
     <EditText
         android:id="@+id/editTextRecipe"
         android:layout_width="wrap_content"
@@ -39,7 +39,7 @@
         app:layout_constraintBottom_toTopOf="@+id/editTextPrice"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextLocation"
+        app:layout_constraintTop_toBottomOf="@+id/textViewLocation"
         android:importantForAutofill="no" />
     <EditText
         android:id="@+id/editTextPrice"

@@ -1,6 +1,5 @@
 package com.mervynm.nom.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,6 +13,7 @@ import android.view.ViewGroup;
 import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
@@ -22,6 +22,7 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.mervynm.nom.R;
+import com.mervynm.nom.models.Location;
 import com.mervynm.nom.models.Post;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -32,20 +33,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MoreInformationComposeFragment extends Fragment {
 
-    EditText editTextLocation;
+    TextView textViewLocation;
     EditText editTextRecipe;
     EditText editTextPrice;
     Button buttonPost;
     File photoFile;
     String description;
     Boolean homemade;
+    Location postLocation;
     String recipeUrl;
     double priceDouble;
 
@@ -79,42 +80,55 @@ public class MoreInformationComposeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupVariables(view);
-        initalizePlaces();
+        initializePlaces();
+        setUpAutocompleteSupportFragment();
         setupOnClickListener();
     }
 
     private void setupVariables(View view) {
-        editTextLocation = view.findViewById(R.id.editTextLocation);
-        editTextLocation.setFocusable(false);
+        textViewLocation = view.findViewById(R.id.textViewLocation);
         editTextRecipe = view.findViewById(R.id.editTextRecipe);
         editTextPrice = view.findViewById(R.id.editTextPrice);
         buttonPost = view.findViewById(R.id.buttonPost);
     }
 
-    private void initalizePlaces() {
+    private void initializePlaces() {
         Places.initialize(Objects.requireNonNull(getContext()), getResources().getString(R.string.api_key));
     }
 
-    private void setupOnClickListener() {
-        editTextLocation.setOnClickListener(new View.OnClickListener() {
+    private void setUpAutocompleteSupportFragment() {
+        assert getFragmentManager() != null;
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        assert autocompleteFragment != null;
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING, Place.Field.PRICE_LEVEL));
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
-            public void onClick(View view) {
-                assert getFragmentManager() != null;
-                AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-                assert autocompleteFragment != null;
-                autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS));
-                autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-                    @Override
-                    public void onPlaceSelected(@NotNull Place place) {
-                        Log.i("MoreInfoCompose", "Place: " + place.getName() + ", " + place.getAddress() + ", " + place.getRating() + ", " + place.getPriceLevel());
-                    }
-                    @Override
-                    public void onError(@NotNull Status status) {
-                        Log.i("MoreInfoCompose", "An error occurred: " + status);
-                    }
-                });
+            public void onPlaceSelected(@NotNull Place place) {
+                Log.i("MoreInfoCompose", "Place: " + place.getName() + ", " + place.getAddress() + ", " + place.getRating() + ", " + place.getPriceLevel());
+                textViewLocation.setText(String.format("Using location: %s", place.getName()));
+                postLocation = createLocation(place);
+            }
+            @Override
+            public void onError(@NotNull Status status) {
+                Log.i("MoreInfoCompose", "An error occurred: " + status);
             }
         });
+    }
+
+    private Location createLocation(Place place) {
+        Location location = new Location();
+        location.setName(place.getName());
+        location.setAddress(place.getAddress());
+        if (place.getRating() != null) {
+            location.setRating(place.getRating());
+        }
+        if (place.getPriceLevel() != null) {
+            location.setPriceLevel(place.getPriceLevel());
+        }
+        return location;
+    }
+
+    private void setupOnClickListener() {
         buttonPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,8 +141,8 @@ public class MoreInformationComposeFragment extends Fragment {
         boolean location = false;
         boolean recipe = false;
         boolean price = false;
-        if (!editTextLocation.getText().toString().isEmpty()) {
-            //verify valid location
+        if (!textViewLocation.getText().toString().isEmpty()) {
+            location = true;
         }
         if (!editTextRecipe.getText().toString().isEmpty()) {
             if (URLUtil.isValidUrl(editTextRecipe.getText().toString())) {
@@ -153,7 +167,7 @@ public class MoreInformationComposeFragment extends Fragment {
                 return;
             }
         }
-        createPost(false, recipe, price);
+        createPost(location, recipe, price);
     }
 
     private void createPost(boolean location, boolean recipe, boolean price) {
@@ -163,7 +177,13 @@ public class MoreInformationComposeFragment extends Fragment {
         post.setKeyDescription(description);
         post.setHomemade(homemade);
         if (location) {
-            //code to set location
+            if (saveLocation()) {
+                post.setLocation(postLocation);
+            }
+            else {
+                Toast.makeText(getContext(), "didn't work", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
         if (recipe) {
             post.setRecipeUrl(recipeUrl);
@@ -172,6 +192,23 @@ public class MoreInformationComposeFragment extends Fragment {
             post.setPrice(priceDouble);
         }
         savePost(post);
+    }
+
+    private boolean saveLocation() {
+        final boolean[] save = {true};
+        postLocation.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Log.e("MoreInfoCompose", "Issue saving location", e);
+                    Toast.makeText(getContext(), "Issue saving location", Toast.LENGTH_SHORT).show();
+                    save[0] = false;
+                    return;
+                }
+                Log.i("MoreInfoCompose", "Location successfully saved");
+            }
+        });
+        return save[0];
     }
 
     private void savePost(Post post) {
