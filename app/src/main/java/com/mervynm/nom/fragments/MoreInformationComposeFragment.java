@@ -16,6 +16,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.Status;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.mervynm.nom.R;
 import com.mervynm.nom.models.Post;
 import com.parse.ParseException;
@@ -23,7 +28,12 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -69,17 +79,42 @@ public class MoreInformationComposeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupVariables(view);
+        initalizePlaces();
         setupOnClickListener();
     }
 
     private void setupVariables(View view) {
         editTextLocation = view.findViewById(R.id.editTextLocation);
+        editTextLocation.setFocusable(false);
         editTextRecipe = view.findViewById(R.id.editTextRecipe);
         editTextPrice = view.findViewById(R.id.editTextPrice);
         buttonPost = view.findViewById(R.id.buttonPost);
     }
 
+    private void initalizePlaces() {
+        Places.initialize(Objects.requireNonNull(getContext()), getResources().getString(R.string.api_key));
+    }
+
     private void setupOnClickListener() {
+        editTextLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                assert getFragmentManager() != null;
+                AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+                assert autocompleteFragment != null;
+                autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS));
+                autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+                    @Override
+                    public void onPlaceSelected(@NotNull Place place) {
+                        Log.i("MoreInfoCompose", "Place: " + place.getName() + ", " + place.getAddress() + ", " + place.getRating() + ", " + place.getPriceLevel());
+                    }
+                    @Override
+                    public void onError(@NotNull Status status) {
+                        Log.i("MoreInfoCompose", "An error occurred: " + status);
+                    }
+                });
+            }
+        });
         buttonPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
