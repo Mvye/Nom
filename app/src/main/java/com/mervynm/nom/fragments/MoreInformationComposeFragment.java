@@ -221,9 +221,9 @@ public class MoreInformationComposeFragment extends Fragment {
                     return;
                 }
                 Log.i("MoreInfoCompose", "Post successsfully saved");
+                goToHome();
             }
         });
-        goToHome();
     }
 
     private void goToHome() {
