@@ -1,5 +1,7 @@
 package com.mervynm.nom.fragments;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -25,6 +27,7 @@ import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
@@ -64,7 +67,13 @@ public class HomeFragment extends Fragment {
                 }
             }
         };
-        adapter = new PostAdapter(getContext(), posts, onLocationClickListener);
+        PostAdapter.OnRecipieClickListener onRecipieClickListener = new PostAdapter.OnRecipieClickListener() {
+            @Override
+            public void OnRecipeClicked(int position) {
+                createRecipeDialog(posts.get(position));
+            }
+        };
+        adapter = new PostAdapter(getContext(), posts, onLocationClickListener, onRecipieClickListener);
         recyclerViewPosts.setAdapter(adapter);
         recyclerViewPosts.setLayoutManager(new LinearLayoutManager(getContext()));
     }
@@ -81,6 +90,14 @@ public class HomeFragment extends Fragment {
                                                                                            priceLevel);
         assert getFragmentManager() != null;
         locationDialogFragment.show(getFragmentManager(), "fragment_location_dialog");
+    }
+
+    private void createRecipeDialog(Post post) {
+        String recipeUrl = post.getRecipeUrl();
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(recipeUrl));
+        if (browserIntent.resolveActivity(Objects.requireNonNull(getActivity()).getPackageManager()) != null) {
+            startActivity(browserIntent);
+        }
     }
 
     protected void queryPosts() {

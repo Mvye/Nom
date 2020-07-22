@@ -33,14 +33,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         void OnLocationClicked(int position);
     }
 
+    public interface OnRecipieClickListener {
+        void OnRecipeClicked(int position);
+    }
+
     Context context;
     List<Post> posts;
     OnLocationClickListener locationClickListener;
+    OnRecipieClickListener recipieClickListener;
 
-    public PostAdapter(Context context, List<Post> posts, OnLocationClickListener locationClickListener) {
+    public PostAdapter(Context context, List<Post> posts, OnLocationClickListener locationClickListener, OnRecipieClickListener recipieClickListener) {
         this.context = context;
         this.posts = posts;
         this.locationClickListener = locationClickListener;
+        this.recipieClickListener = recipieClickListener;
     }
 
     @NonNull
@@ -222,8 +228,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             if (post.getPrice() == 0) {
                 imageViewPrice.setVisibility(View.GONE);
             }
-            if (!post.getHomemade()) {
+            if (!post.getHomemade() || post.getRecipeUrl() == null) {
                 imageViewRecipe.setVisibility(View.GONE);
+            }
+            else if (post.getRecipeUrl() != null){
+                imageViewRecipe.setVisibility(View.VISIBLE);
+                imageViewRecipe.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        recipieClickListener.OnRecipeClicked(getAdapterPosition());
+                    }
+                });
             }
             textViewUsername2.setText(username);
             textViewDescription.setText(post.getDescription());

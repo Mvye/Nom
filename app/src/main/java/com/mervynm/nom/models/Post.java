@@ -117,7 +117,7 @@ public class Post extends ParseObject {
         put(KEY_LOCATION, location);
     }
 
-    public String getKeyRecipeUrl() {
+    public String getRecipeUrl() {
         return getString(KEY_RECIPE_URL);
     }
 
