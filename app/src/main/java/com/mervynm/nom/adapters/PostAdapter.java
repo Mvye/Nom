@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.target.Target;
+import com.hootsuite.nachos.NachoTextView;
 import com.mervynm.nom.R;
 import com.mervynm.nom.models.Post;
 import com.parse.GetCallback;
@@ -90,6 +91,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         TextView textViewUsername2;
         TextView textViewDescription;
         TextView textViewCreatedAt;
+        NachoTextView nachoTextViewTags;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -109,6 +111,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             textViewUsername2 = itemView.findViewById(R.id.textViewUsername2);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
             textViewCreatedAt = itemView.findViewById(R.id.textViewCreatedAt);
+            nachoTextViewTags = itemView.findViewById(R.id.nachoTextViewTags);
         }
 
         private void setupOnClickListeners() {
@@ -243,6 +246,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             textViewUsername2.setText(username);
             textViewDescription.setText(post.getDescription());
             textViewCreatedAt.setText(post.getCreatedAt().toString());
+            if (!post.getTags().isEmpty()) {
+                nachoTextViewTags.setVisibility(View.VISIBLE);
+                nachoTextViewTags.setText(post.getTags());
+            }
+            else {
+                nachoTextViewTags.setVisibility(View.GONE);
+            }
         }
     }
 }
