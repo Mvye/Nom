@@ -1,13 +1,19 @@
 package com.mervynm.nom.models;
 
+import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseClassName;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
+
+import java.util.List;
+import java.util.Objects;
 
 @ParseClassName("Post")
 public class Post extends ParseObject {
@@ -103,8 +109,8 @@ public class Post extends ParseObject {
         saveInBackground();
     }
 
-    public ParseObject getLocation() {
-        return getParseObject(KEY_LOCATION);
+    public Location getLocation() {
+        return (Location) getParseObject(KEY_LOCATION);
     }
 
     public void setLocation(Location location) {

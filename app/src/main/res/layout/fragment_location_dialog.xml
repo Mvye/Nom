@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="20dp"
+    android:layout_gravity="center"
+    android:backgroundTint="#FFFFFF"
+    tools:context=".fragments.LocationDialogFragment">
+
+    <TextView
+        android:id="@+id/textViewLocationName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Intrinsic Cafe" />
+    <RatingBar
+        android:id="@+id/ratingBarLocationRating"
+        style="@android:style/Widget.Material.RatingBar.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="5dp"
+        android:accessibilityLiveRegion="none"
+        android:numStars="5"
+        android:stepSize="0.5"
+        app:layout_constraintStart_toEndOf="@+id/textViewLocationName"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/textViewLocationRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintStart_toEndOf="@+id/ratingBarLocationRating"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="4.6" />
+    <TextView
+        android:id="@+id/textViewLocationAddress"
+        android:layout_width="103dp"
+        android:layout_height="59dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewLocationName"
+        tools:text="1 Sussex Ave #3926, Newark NJ 07103" />
+    <TextView
+        android:id="@+id/textViewLocationPriceLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textViewLocationAddress"
+        app:layout_constraintTop_toBottomOf="@+id/textViewLocationRating"
+        tools:text="$" />
+</androidx.constraintlayout.widget.ConstraintLayout>

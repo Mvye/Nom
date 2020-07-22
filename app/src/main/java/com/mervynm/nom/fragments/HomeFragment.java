@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.mervynm.nom.R;
 import com.mervynm.nom.adapters.PostAdapter;
+import com.mervynm.nom.models.Location;
 import com.mervynm.nom.models.Post;
 import com.parse.FindCallback;
 import com.parse.Parse;
@@ -56,7 +57,11 @@ public class HomeFragment extends Fragment {
         PostAdapter.OnLocationClickListener onLocationClickListener = new PostAdapter.OnLocationClickListener() {
             @Override
             public void OnLocationClicked(int position) {
-                createLocationDialog();
+                try {
+                    createLocationDialog(posts.get(position));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
             }
         };
         adapter = new PostAdapter(getContext(), posts, onLocationClickListener);
@@ -64,8 +69,18 @@ public class HomeFragment extends Fragment {
         recyclerViewPosts.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
-    private void createLocationDialog() {
-        Toast.makeText(getContext(), "This should open LocationDialog", Toast.LENGTH_SHORT).show();
+    private void createLocationDialog(Post post) throws ParseException {
+        Location postLocation = post.getLocation();
+        String name = postLocation.fetchIfNeeded().getString("name");
+        double rating = postLocation.fetchIfNeeded().getDouble("rating");
+        String address = postLocation.fetchIfNeeded().getString("address");
+        int priceLevel = postLocation.fetchIfNeeded().getInt("priceLevel");
+        LocationDialogFragment locationDialogFragment = LocationDialogFragment.newInstance(name,
+                                                                                           rating,
+                                                                                           address,
+                                                                                           priceLevel);
+        assert getFragmentManager() != null;
+        locationDialogFragment.show(getFragmentManager(), "fragment_location_dialog");
     }
 
     protected void queryPosts() {
