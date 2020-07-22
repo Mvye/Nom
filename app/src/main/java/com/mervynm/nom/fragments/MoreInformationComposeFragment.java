@@ -8,9 +8,11 @@ import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,6 +23,9 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.hootsuite.nachos.NachoTextView;
+import com.hootsuite.nachos.chip.Chip;
+import com.hootsuite.nachos.terminator.ChipTerminatorHandler;
 import com.mervynm.nom.R;
 import com.mervynm.nom.models.Location;
 import com.mervynm.nom.models.Post;
@@ -30,9 +35,11 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,6 +49,7 @@ public class MoreInformationComposeFragment extends Fragment {
     TextView textViewLocation;
     EditText editTextRecipe;
     EditText editTextPrice;
+    NachoTextView nachoTextViewTags;
     Button buttonPost;
     File photoFile;
     String description;
@@ -49,6 +57,7 @@ public class MoreInformationComposeFragment extends Fragment {
     Location postLocation;
     String recipeUrl;
     double priceDouble;
+    List<String> tags;
 
     public MoreInformationComposeFragment() {}
 
@@ -80,6 +89,7 @@ public class MoreInformationComposeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupVariables(view);
+        setupNachoTextView();
         initializePlaces();
         setUpAutocompleteSupportFragment();
         setupOnClickListener();
@@ -89,7 +99,14 @@ public class MoreInformationComposeFragment extends Fragment {
         textViewLocation = view.findViewById(R.id.textViewLocation);
         editTextRecipe = view.findViewById(R.id.editTextRecipe);
         editTextPrice = view.findViewById(R.id.editTextPrice);
+        nachoTextViewTags = view.findViewById(R.id.nachoTextViewTags);
         buttonPost = view.findViewById(R.id.buttonPost);
+    }
+
+    private void setupNachoTextView() {
+        String[] tagSuggestions = new String[]{"sour", "spicy", "sweet", "Japanese", "Indian", "Italian", "vegetarian", "vegan"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(Objects.requireNonNull(getContext()), android.R.layout.simple_dropdown_item_1line, tagSuggestions);
+        nachoTextViewTags.setAdapter(adapter);
     }
 
     private void initializePlaces() {
@@ -141,6 +158,7 @@ public class MoreInformationComposeFragment extends Fragment {
         boolean location = false;
         boolean recipe = false;
         boolean price = false;
+        boolean tag = false;
         if (!textViewLocation.getText().toString().isEmpty()) {
             location = true;
         }
@@ -167,10 +185,15 @@ public class MoreInformationComposeFragment extends Fragment {
                 return;
             }
         }
-        createPost(location, recipe, price);
+        if (!nachoTextViewTags.getChipValues().isEmpty()) {
+            tag = true;
+            tags = nachoTextViewTags.getChipValues();
+            Log.i("MoreInfoCompose", "This is the list " + nachoTextViewTags.getChipValues().toString());
+        }
+        createPost(location, recipe, price, tag);
     }
 
-    private void createPost(boolean location, boolean recipe, boolean price) {
+    private void createPost(boolean location, boolean recipe, boolean price, boolean tag) {
         Post post = new Post();
         post.setAuthor(ParseUser.getCurrentUser());
         post.setImage(new ParseFile(photoFile));
@@ -190,6 +213,9 @@ public class MoreInformationComposeFragment extends Fragment {
         }
         if (price) {
             post.setPrice(priceDouble);
+        }
+        if (tag) {
+            post.setTags(tags);
         }
         savePost(post);
     }

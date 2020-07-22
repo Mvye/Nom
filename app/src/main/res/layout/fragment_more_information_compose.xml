@@ -8,6 +8,15 @@
     android:backgroundTint="@color/white"
     tools:context=".fragments.MoreInformationComposeFragment" >
 
+    <fragment
+        android:id="@+id/autocomplete_fragment"
+        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/places_autocomplete_fragment" />
     <TextView
         android:id="@+id/textViewLocation"
         android:layout_width="wrap_content"
@@ -18,42 +27,42 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-    <fragment
-        android:id="@+id/autocomplete_fragment"
-        android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+        app:layout_constraintTop_toTopOf="parent" />
+    <com.hootsuite.nachos.NachoTextView
+        android:id="@+id/nachoTextViewTags"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout="@layout/places_autocomplete_fragment" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewLocation" />
     <EditText
         android:id="@+id/editTextRecipe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:ems="10"
         android:hint="@string/enter_recipe_link"
+        android:importantForAutofill="no"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/editTextPrice"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewLocation"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/nachoTextViewTags" />
     <EditText
         android:id="@+id/editTextPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="125dp"
+        android:layout_marginTop="5dp"
         android:ems="10"
         android:hint="@string/enter_price"
+        android:importantForAutofill="no"
         android:inputType="numberDecimal"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        android:importantForAutofill="no" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextRecipe" />
     <Button
         android:id="@+id/buttonPost"
         android:layout_width="wrap_content"

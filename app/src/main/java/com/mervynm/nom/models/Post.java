@@ -1,19 +1,14 @@
 package com.mervynm.nom.models;
 
-import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseClassName;
-import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
 
 import java.util.List;
-import java.util.Objects;
 
 @ParseClassName("Post")
 public class Post extends ParseObject {
@@ -55,11 +50,11 @@ public class Post extends ParseObject {
         put(KEY_DESCRIPTION, description);
     }
 
-    public JSONArray getTags() {
-        return getJSONArray(KEY_TAGS);
+    public List<String> getTags() {
+        return getList(KEY_TAGS);
     }
 
-    public void setTags(JSONArray tags) {
+    public void setTags(List<String> tags) {
         put(KEY_TAGS, tags);
     }
 
