@@ -133,8 +133,14 @@ public class ComposeFragment extends Fragment {
                 Bitmap rawTakenImage = BitmapFactory.decodeFile(takenPhotoUri.getPath());
                 Bitmap resizedBitmap = BitmapScaler.scaleToFitWidth(rawTakenImage, 400);
                 imageViewPicture.setImageBitmap(resizedBitmap);
-            } else {
-                Toast.makeText(getContext(), "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
+                if (!buttonTakePicture.getText().toString().equals("Retake Picture")) {
+                    buttonTakePicture.setText(R.string.retake_picture);
+                }
+            }
+            else {
+                if (!buttonTakePicture.getText().toString().equals("Retake Picture")) {
+                    Toast.makeText(getContext(), "Picture wasn't taken!", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
