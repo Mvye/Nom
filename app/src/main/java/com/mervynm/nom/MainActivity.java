@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
@@ -39,6 +41,13 @@ public class MainActivity extends AppCompatActivity {
     private void showLogOutDialog() {
         LogoutDialogFragment logoutDialogFragment = new LogoutDialogFragment();
         logoutDialogFragment.show(fragmentManager, "fragment_logout_dialog");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_toolbar, menu);
+        return true;
     }
 
     @Override

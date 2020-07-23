@@ -14,7 +14,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorPrimary"
+        app:menu="@menu/menu_toolbar">
     </androidx.appcompat.widget.Toolbar>
     <FrameLayout
         android:id="@+id/frameLayoutContainer"
