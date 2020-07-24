@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,8 +25,6 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.hootsuite.nachos.NachoTextView;
-import com.hootsuite.nachos.chip.Chip;
-import com.hootsuite.nachos.terminator.ChipTerminatorHandler;
 import com.mervynm.nom.R;
 import com.mervynm.nom.models.Location;
 import com.mervynm.nom.models.Post;
@@ -35,7 +34,6 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
 
 import java.io.File;
 import java.util.Arrays;
@@ -254,7 +252,6 @@ public class MoreInformationComposeFragment extends Fragment {
 
     private void goToHome() {
         assert getFragmentManager() != null;
-        getFragmentManager().beginTransaction().replace(R.id.frameLayoutContainer, new HomeFragment()).commit();
+        getFragmentManager().beginTransaction().replace(R.id.frameLayoutContainer, new HomeFragment()).addToBackStack("MoreInfo").commit();
     }
-
 }

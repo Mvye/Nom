@@ -3,12 +3,14 @@ package com.mervynm.nom.fragments;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
+import androidx.exifinterface.media.ExifInterface;
 import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
@@ -28,6 +30,7 @@ import com.mervynm.nom.R;
 import com.mervynm.nom.external.BitmapScaler;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
@@ -130,7 +133,8 @@ public class ComposeFragment extends Fragment {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Uri takenPhotoUri = Uri.fromFile(getPhotoFileUri(photoFileName));
-                Bitmap rawTakenImage = BitmapFactory.decodeFile(takenPhotoUri.getPath());
+                //Bitmap rawTakenImage = BitmapFactory.decodeFile(takenPhotoUri.getPath());
+                Bitmap rawTakenImage = rotateBitmapOrientation(takenPhotoUri.getPath());
                 Bitmap resizedBitmap = BitmapScaler.scaleToFitWidth(rawTakenImage, 400);
                 imageViewPicture.setImageBitmap(resizedBitmap);
                 if (!buttonTakePicture.getText().toString().equals("Retake Picture")) {
@@ -145,10 +149,34 @@ public class ComposeFragment extends Fragment {
         }
     }
 
+    public Bitmap rotateBitmapOrientation(String photoFilePath) {
+        BitmapFactory.Options bounds = new BitmapFactory.Options();
+        bounds.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(photoFilePath, bounds);
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        Bitmap bm = BitmapFactory.decodeFile(photoFilePath, opts);
+        ExifInterface exif = null;
+        try {
+            exif = new ExifInterface(photoFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert exif != null;
+        String orientString = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
+        int orientation = orientString != null ? Integer.parseInt(orientString) : ExifInterface.ORIENTATION_NORMAL;
+        int rotationAngle = 0;
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_90) rotationAngle = 90;
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_180) rotationAngle = 180;
+        if (orientation == ExifInterface.ORIENTATION_ROTATE_270) rotationAngle = 270;
+        Matrix matrix = new Matrix();
+        matrix.setRotate(rotationAngle, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
+        return Bitmap.createBitmap(bm, 0, 0, bounds.outWidth, bounds.outHeight, matrix, true);
+    }
+
     private void goToMoreInformationComposeFragment() {
         MoreInformationComposeFragment moreInformationComposeFragment = MoreInformationComposeFragment.newInstance(photoFile, description, homemade);
         assert getFragmentManager() != null;
-        getFragmentManager().beginTransaction().replace(R.id.frameLayoutContainer, moreInformationComposeFragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.frameLayoutContainer, moreInformationComposeFragment).addToBackStack("Compose").commit();
     }
 
 }
