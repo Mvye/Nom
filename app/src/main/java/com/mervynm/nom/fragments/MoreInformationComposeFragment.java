@@ -6,11 +6,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
@@ -21,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
@@ -43,7 +40,10 @@ import com.parse.SaveCallback;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -147,7 +147,7 @@ public class MoreInformationComposeFragment extends Fragment {
     }
 
     private Location createLocation(Place place) {
-        Location location = new Location();
+        final Location location = new Location();
         location.setName(place.getName());
         location.setAddress(place.getAddress());
         if (place.getRating() != null) {
@@ -162,24 +162,32 @@ public class MoreInformationComposeFragment extends Fragment {
         }
         else {
             final PhotoMetadata photoMetadata = metadata.get(0);
-
-            // Get the attribution text.
             final String attributions = photoMetadata.getAttributions();
-
-            // Create a FetchPhotoRequest.
             final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                    .setMaxWidth(150) // Optional.
-                    .setMaxHeight(150) // Optional.
                     .build();
             placesClient.fetchPhoto(photoRequest).addOnSuccessListener(new OnSuccessListener<FetchPhotoResponse>() {
                 @Override
                 public void onSuccess(FetchPhotoResponse fetchPhotoResponse) {
                     Bitmap bitmap = fetchPhotoResponse.getBitmap();
+                    location.setPicture(persistImage(bitmap));
                     imageViewLocationPicture.setImageBitmap(bitmap);
                 }
             });
         }
         return location;
+    }
+
+    private ParseFile persistImage(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        byte[] bitmapBytes = stream.toByteArray();
+        ParseFile picture = new ParseFile("locationPicture", bitmapBytes);
+        try {
+            picture.save();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return picture;
     }
 
     private void setupOnClickListener() {
