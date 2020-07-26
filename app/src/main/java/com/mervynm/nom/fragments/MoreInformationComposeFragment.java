@@ -1,5 +1,6 @@
 package com.mervynm.nom.fragments;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,12 +17,19 @@ import android.webkit.URLUtil;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FetchPhotoResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.hootsuite.nachos.NachoTextView;
@@ -44,11 +52,13 @@ import java.util.regex.Pattern;
 
 public class MoreInformationComposeFragment extends Fragment {
 
+    ImageView imageViewLocationPicture;
     TextView textViewLocation;
     EditText editTextRecipe;
     EditText editTextPrice;
     NachoTextView nachoTextViewTags;
     Button buttonPost;
+    PlacesClient placesClient;
     File photoFile;
     String description;
     Boolean homemade;
@@ -94,6 +104,7 @@ public class MoreInformationComposeFragment extends Fragment {
     }
 
     private void setupVariables(View view) {
+        imageViewLocationPicture = view.findViewById(R.id.imageViewLocationPicture);
         textViewLocation = view.findViewById(R.id.textViewLocation);
         editTextRecipe = view.findViewById(R.id.editTextRecipe);
         editTextPrice = view.findViewById(R.id.editTextPrice);
@@ -109,13 +120,18 @@ public class MoreInformationComposeFragment extends Fragment {
 
     private void initializePlaces() {
         Places.initialize(Objects.requireNonNull(getContext()), getResources().getString(R.string.api_key));
+        placesClient = Places.createClient(getContext());
     }
 
     private void setUpAutocompleteSupportFragment() {
         assert getFragmentManager() != null;
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         assert autocompleteFragment != null;
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING, Place.Field.PRICE_LEVEL));
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.NAME,
+                                                          Place.Field.ADDRESS,
+                                                          Place.Field.RATING,
+                                                          Place.Field.PRICE_LEVEL,
+                                                          Place.Field.PHOTO_METADATAS));
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NotNull Place place) {
@@ -139,6 +155,29 @@ public class MoreInformationComposeFragment extends Fragment {
         }
         if (place.getPriceLevel() != null) {
             location.setPriceLevel(place.getPriceLevel());
+        }
+        final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
+        if (metadata == null || metadata.isEmpty()) {
+            Log.w("MoreInfoCompose", "No photo metadata.");
+        }
+        else {
+            final PhotoMetadata photoMetadata = metadata.get(0);
+
+            // Get the attribution text.
+            final String attributions = photoMetadata.getAttributions();
+
+            // Create a FetchPhotoRequest.
+            final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                    .setMaxWidth(150) // Optional.
+                    .setMaxHeight(150) // Optional.
+                    .build();
+            placesClient.fetchPhoto(photoRequest).addOnSuccessListener(new OnSuccessListener<FetchPhotoResponse>() {
+                @Override
+                public void onSuccess(FetchPhotoResponse fetchPhotoResponse) {
+                    Bitmap bitmap = fetchPhotoResponse.getBitmap();
+                    imageViewLocationPicture.setImageBitmap(bitmap);
+                }
+            });
         }
         return location;
     }
