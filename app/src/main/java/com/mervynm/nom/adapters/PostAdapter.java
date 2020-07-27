@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,10 +27,11 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
+public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> implements Filterable{
 
     public interface OnLocationClickListener {
         void OnLocationClicked(int position);
@@ -40,12 +43,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     Context context;
     List<Post> posts;
+    List<Post> postListFull;
     OnLocationClickListener locationClickListener;
     OnRecipieClickListener recipieClickListener;
 
     public PostAdapter(Context context, List<Post> posts, OnLocationClickListener locationClickListener, OnRecipieClickListener recipieClickListener) {
         this.context = context;
         this.posts = posts;
+        postListFull = new ArrayList<>(posts);
         this.locationClickListener = locationClickListener;
         this.recipieClickListener = recipieClickListener;
     }
@@ -67,6 +72,39 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public int getItemCount() {
         return posts.size();
     }
+
+    public Filter getFilter() {
+        return postFilter;
+    }
+
+    private Filter postFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<Post> filteredList = new ArrayList<>();
+            if (constraint == null || constraint.length() == 0) {
+                filteredList.addAll(postListFull);
+            }
+            else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+                for (Post post : postListFull)  {
+                    if (post.getTagsAsLowerCase().contains(filterPattern)) {
+                        filteredList.add(post);
+                    }
+                }
+            }
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            posts.clear();
+            //noinspection unchecked
+            posts.addAll( (List<Post>) filterResults.values);
+            notifyDataSetChanged();
+        }
+    };
 
     public void clear() {
         posts.clear();

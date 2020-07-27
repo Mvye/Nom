@@ -9,6 +9,7 @@ import com.parse.ParseUser;
 import org.json.JSONArray;
 
 import java.util.List;
+import java.util.ListIterator;
 
 @ParseClassName("Post")
 public class Post extends ParseObject {
@@ -52,6 +53,15 @@ public class Post extends ParseObject {
 
     public List<String> getTags() {
         return getList(KEY_TAGS);
+    }
+
+    public List<String> getTagsAsLowerCase() {
+        List<String> tags = getTags();
+        ListIterator<String> iterator = tags.listIterator();
+        while (iterator.hasNext()) {
+            iterator.set(iterator.next().toLowerCase());
+        }
+        return tags;
     }
 
     public void setTags(List<String> tags) {
