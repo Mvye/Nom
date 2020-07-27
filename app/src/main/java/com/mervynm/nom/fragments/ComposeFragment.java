@@ -133,7 +133,6 @@ public class ComposeFragment extends Fragment {
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Uri takenPhotoUri = Uri.fromFile(getPhotoFileUri(photoFileName));
-                //Bitmap rawTakenImage = BitmapFactory.decodeFile(takenPhotoUri.getPath());
                 Bitmap rawTakenImage = rotateBitmapOrientation(takenPhotoUri.getPath());
                 Bitmap resizedBitmap = BitmapScaler.scaleToFitWidth(rawTakenImage, 400);
                 imageViewPicture.setImageBitmap(resizedBitmap);
