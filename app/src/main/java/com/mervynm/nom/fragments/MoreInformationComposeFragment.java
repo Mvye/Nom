@@ -249,7 +249,7 @@ public class MoreInformationComposeFragment extends Fragment {
                 post.setLocation(postLocation);
             }
             else {
-                Toast.makeText(getContext(), "didn't work", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Location could not be saved", Toast.LENGTH_SHORT).show();
                 return;
             }
         }

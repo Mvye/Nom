@@ -109,17 +109,6 @@ public class ComposeFragment extends Fragment {
         }
     }
 
-    private boolean checkIfInfoInputted() {
-        description = editTextDescription.getText().toString();
-        if (photoFile != null && !description.equals("")) {
-            return true;
-        }
-        else {
-            Toast.makeText(getContext(), "Missing Picture or Description", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-    }
-
     private File getPhotoFileUri(String fileName) {
         File mediaStorageDir = new File(Objects.requireNonNull(getContext()).getExternalFilesDir(Environment.DIRECTORY_PICTURES), TAG);
         if (!mediaStorageDir.exists() && !mediaStorageDir.mkdirs()){
@@ -170,6 +159,17 @@ public class ComposeFragment extends Fragment {
         Matrix matrix = new Matrix();
         matrix.setRotate(rotationAngle, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
         return Bitmap.createBitmap(bm, 0, 0, bounds.outWidth, bounds.outHeight, matrix, true);
+    }
+
+    private boolean checkIfInfoInputted() {
+        description = editTextDescription.getText().toString();
+        if (photoFile != null && !description.equals("")) {
+            return true;
+        }
+        else {
+            Toast.makeText(getContext(), "Missing Picture or Description", Toast.LENGTH_SHORT).show();
+            return false;
+        }
     }
 
     private void goToMoreInformationComposeFragment() {
