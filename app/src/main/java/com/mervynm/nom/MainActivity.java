@@ -47,30 +47,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_toolbar, menu);
-        //SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        //SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        //searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        return true;
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupVariables();
-        //setupToolbar();
         setUpBottomNavigationBar();
     }
 
     private void setupVariables() {
         bottomNavigationBar = findViewById(R.id.bottom_navigation);
-    }
-
-    private void setupToolbar() {
-        toolbar.setTitle("Nom");
     }
 
     private void setUpBottomNavigationBar() {

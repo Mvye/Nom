@@ -1,5 +1,7 @@
 package com.mervynm.nom.models;
 
+import androidx.annotation.NonNull;
+
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -55,13 +57,13 @@ public class Post extends ParseObject {
         return getList(KEY_TAGS);
     }
 
-    public List<String> getTagsAsLowerCase() {
-        List<String> tags = getTags();
-        ListIterator<String> iterator = tags.listIterator();
-        while (iterator.hasNext()) {
-            iterator.set(iterator.next().toLowerCase());
+    public String getTagsAsLowerCase() {
+        StringBuilder tags = new StringBuilder();
+        List<String> tagList = getTags();
+        for (String s : tagList) {
+            tags.append(s.toLowerCase()).append(" ");
         }
-        return tags;
+        return tags.toString();
     }
 
     public void setTags(List<String> tags) {

@@ -50,7 +50,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
     public PostAdapter(Context context, List<Post> posts, OnLocationClickListener locationClickListener, OnRecipieClickListener recipieClickListener) {
         this.context = context;
         this.posts = posts;
-        postListFull = new ArrayList<>(posts);
+        postListFull = posts;
         this.locationClickListener = locationClickListener;
         this.recipieClickListener = recipieClickListener;
     }
@@ -87,7 +87,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
             else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
                 for (Post post : postListFull)  {
-                    if (post.getTagsAsLowerCase().contains(filterPattern)) {
+                    if (!post.getTags().isEmpty() && post.getTagsAsLowerCase().contains(filterPattern)) {
                         filteredList.add(post);
                     }
                 }

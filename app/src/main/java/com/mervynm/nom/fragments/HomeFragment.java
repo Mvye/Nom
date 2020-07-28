@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,6 +39,7 @@ import java.util.Objects;
 
 public class HomeFragment extends Fragment {
 
+    Toolbar toolbar;
     SwipeRefreshLayout swipeContainer;
     RecyclerView recyclerViewPosts;
     List<Post> posts;
@@ -47,8 +49,8 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -61,6 +63,7 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         setupSwipeRefreshLayout(view);
         setupRecyclerView(view);
+        setupToolbar(view);
         queryFollowing();
     }
 
@@ -125,6 +128,23 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    private void setupToolbar(View view) {
+        toolbar = view.findViewById(R.id.toolbar);
+        SearchView searchView = (SearchView) toolbar.getMenu().findItem(R.id.search).getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+    }
+
     private void queryFollowing() {
         final List<ParseQuery<Post>> followingUsersPosts = new ArrayList<>();
         final List<ParseUser> followingUsers = new ArrayList<>();
@@ -170,19 +190,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_toolbar, menu);
-        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                adapter.getFilter().filter(newText);
-                return false;
-            }
-        });
         super.onCreateOptionsMenu(menu, inflater);
     }
 }
