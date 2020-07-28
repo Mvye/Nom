@@ -108,6 +108,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
 
     public void clear() {
         posts.clear();
+        postListFull.clear();
         notifyDataSetChanged();
     }
 
