@@ -48,7 +48,10 @@ public class ProfileFragment extends HomeFragment {
         super.onViewCreated(view, savedInstanceState);
         setupVariables(view);
         setUpProfileBar();
-        queryPosts();
+    }
+
+    @Override
+    protected void setupToolbar(View view) {
     }
 
     public void setupVariables(View view) {
@@ -65,7 +68,8 @@ public class ProfileFragment extends HomeFragment {
         textViewUsername.setText(user.getUsername());
     }
 
-    private void queryPosts() {
+    @Override
+    protected void queryPosts() {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_AUTHOR);
         query.whereEqualTo(Post.KEY_AUTHOR, ParseUser.getCurrentUser());

@@ -64,7 +64,7 @@ public class HomeFragment extends Fragment {
         setupSwipeRefreshLayout(view);
         setupRecyclerView(view);
         setupToolbar(view);
-        queryFollowing();
+        queryPosts();
     }
 
     private void setupSwipeRefreshLayout(View view) {
@@ -72,7 +72,7 @@ public class HomeFragment extends Fragment {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                queryFollowing();
+                queryPosts();
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -128,7 +128,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void setupToolbar(View view) {
+    protected void setupToolbar(View view) {
         toolbar = view.findViewById(R.id.toolbar);
         SearchView searchView = (SearchView) toolbar.getMenu().findItem(R.id.search).getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -145,7 +145,7 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void queryFollowing() {
+    protected void queryPosts() {
         final ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_AUTHOR);
         final List<ParseUser> followingUsers = new ArrayList<>();
