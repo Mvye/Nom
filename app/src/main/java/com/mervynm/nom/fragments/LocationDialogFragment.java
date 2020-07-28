@@ -16,6 +16,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.Target;
 import com.mervynm.nom.R;
 
 import java.util.Objects;
@@ -85,6 +86,7 @@ public class LocationDialogFragment extends DialogFragment {
         if (!pictureUrl.equals("")) {
             imageViewLocationPicture.setVisibility(View.VISIBLE);
             Glide.with(Objects.requireNonNull(getContext())).load(pictureUrl)
+                                                            .override(Target.SIZE_ORIGINAL)
                                                             .into(imageViewLocationPicture);
         }
         else {
