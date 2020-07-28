@@ -1,10 +1,14 @@
 package com.mervynm.nom.fragments;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -24,8 +28,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.FetchPhotoResponse;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
@@ -50,8 +57,14 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MoreInformationComposeFragment extends Fragment {
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
+import pub.devrel.easypermissions.PermissionRequest;
 
+public class MoreInformationComposeFragment extends Fragment implements EasyPermissions.PermissionCallbacks{
+
+    private static final int RC_LOCATION = 33;
     Button buttonUseCurrentLocation;
     ImageView imageViewLocationPicture;
     TextView textViewLocation;
@@ -68,7 +81,8 @@ public class MoreInformationComposeFragment extends Fragment {
     double priceDouble;
     List<String> tags;
 
-    public MoreInformationComposeFragment() {}
+    public MoreInformationComposeFragment() {
+    }
 
     public static MoreInformationComposeFragment newInstance(File photoFile, String description, Boolean homemade) {
         MoreInformationComposeFragment moreInformationComposeFragment = new MoreInformationComposeFragment();
@@ -90,8 +104,25 @@ public class MoreInformationComposeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_more_information_compose, container, false);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this).build().show();
+        }
     }
 
     @Override
@@ -130,10 +161,10 @@ public class MoreInformationComposeFragment extends Fragment {
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         assert autocompleteFragment != null;
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.NAME,
-                                                          Place.Field.ADDRESS,
-                                                          Place.Field.RATING,
-                                                          Place.Field.PRICE_LEVEL,
-                                                          Place.Field.PHOTO_METADATAS));
+                Place.Field.ADDRESS,
+                Place.Field.RATING,
+                Place.Field.PRICE_LEVEL,
+                Place.Field.PHOTO_METADATAS));
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NotNull Place place) {
@@ -141,6 +172,7 @@ public class MoreInformationComposeFragment extends Fragment {
                 textViewLocation.setText(String.format("Using location: %s", place.getName()));
                 postLocation = createLocation(place);
             }
+
             @Override
             public void onError(@NotNull Status status) {
                 Log.i("MoreInfoCompose", "An error occurred: " + status);
@@ -161,8 +193,7 @@ public class MoreInformationComposeFragment extends Fragment {
         final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
         if (metadata == null || metadata.isEmpty()) {
             Log.w("MoreInfoCompose", "No photo metadata.");
-        }
-        else {
+        } else {
             final PhotoMetadata photoMetadata = metadata.get(0);
             final String attributions = photoMetadata.getAttributions();
             final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
@@ -196,7 +227,7 @@ public class MoreInformationComposeFragment extends Fragment {
         buttonUseCurrentLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                requestToUseFineLocation();
             }
         });
         buttonPost.setOnClickListener(new View.OnClickListener() {
@@ -205,6 +236,44 @@ public class MoreInformationComposeFragment extends Fragment {
                 checkIfInfoInputtedIsCorrect();
             }
         });
+    }
+
+    @SuppressLint("MissingPermission")
+    private void getCurrentPlace() {
+        FindCurrentPlaceRequest findCurrentPlaceRequest = FindCurrentPlaceRequest
+                .builder(Arrays.asList(Place.Field.NAME,
+                        Place.Field.ADDRESS,
+                        Place.Field.RATING,
+                        Place.Field.PRICE_LEVEL,
+                        Place.Field.PHOTO_METADATAS)).build();
+        placesClient.findCurrentPlace(findCurrentPlaceRequest).addOnSuccessListener(new OnSuccessListener<FindCurrentPlaceResponse>() {
+            @Override
+            public void onSuccess(FindCurrentPlaceResponse findCurrentPlaceResponse) {
+                for (PlaceLikelihood placeLikelihood : findCurrentPlaceResponse.getPlaceLikelihoods()) {
+                    Log.i("MoreInfoCompose", String.format("Place '%s' has likelihood: %f",
+                            placeLikelihood.getPlace().getName(),
+                            placeLikelihood.getLikelihood()));
+                }
+            }
+        });
+    }
+
+    @AfterPermissionGranted(RC_LOCATION)
+    private void requestToUseFineLocation() {
+        String[] perm = {Manifest.permission.ACCESS_FINE_LOCATION};
+        if (EasyPermissions.hasPermissions(Objects.requireNonNull(getContext()), perm)) {
+            getCurrentPlace();
+        }
+        else {
+            /*EasyPermissions.requestPermissions(
+                    new PermissionRequest.Builder(this, RC_LOCATION, perm)
+                            .setRationale("Request Fine Location Access")
+                            .setPositiveButtonText("Ok")
+                            .setNegativeButtonText("cancel")
+                            .setTheme(R.style.AppTheme)
+                            .build());*/
+            EasyPermissions.requestPermissions(this, "Request Permission", RC_LOCATION, perm);
+        }
     }
 
     private void checkIfInfoInputtedIsCorrect() {
