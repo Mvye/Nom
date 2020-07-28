@@ -45,27 +45,23 @@ public class ProfileFragment extends HomeFragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         setupVariables(view);
-        setUpProfileBar();
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
     protected void setupToolbar(View view) {
+        ParseUser user = ParseUser.getCurrentUser();
+        Glide.with(Objects.requireNonNull(getContext())).load(Objects.requireNonNull(user.getParseFile("profilePicture")).getUrl())
+                .transform(new CircleCrop())
+                .into(imageViewProfilePicture);
+        textViewUsername.setText(user.getUsername());
     }
 
     public void setupVariables(View view) {
         imageViewProfilePicture = view.findViewById(R.id.imageViewProfilePicture);
         textViewUsername = view.findViewById(R.id.textViewUsername);
         recyclerViewPosts = view.findViewById(R.id.recyclerViewPosts);
-    }
-
-    private void setUpProfileBar() {
-        ParseUser user = ParseUser.getCurrentUser();
-        Glide.with(Objects.requireNonNull(getContext())).load(Objects.requireNonNull(user.getParseFile("profilePicture")).getUrl())
-                .transform(new CircleCrop())
-                .into(imageViewProfilePicture);
-        textViewUsername.setText(user.getUsername());
     }
 
     @Override
