@@ -50,7 +50,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
     public PostAdapter(Context context, List<Post> posts, OnLocationClickListener locationClickListener, OnRecipieClickListener recipieClickListener) {
         this.context = context;
         this.posts = posts;
-        postListFull = posts;
+        postListFull = new ArrayList<>(posts);
         this.locationClickListener = locationClickListener;
         this.recipieClickListener = recipieClickListener;
     }
@@ -113,6 +113,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
 
     public void addAll(List<Post> postList) {
         posts.addAll(postList);
+        postListFull.addAll(postList);
         notifyDataSetChanged();
     }
 
