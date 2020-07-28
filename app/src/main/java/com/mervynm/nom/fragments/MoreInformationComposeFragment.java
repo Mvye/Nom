@@ -52,6 +52,7 @@ import java.util.regex.Pattern;
 
 public class MoreInformationComposeFragment extends Fragment {
 
+    Button buttonUseCurrentLocation;
     ImageView imageViewLocationPicture;
     TextView textViewLocation;
     EditText editTextRecipe;
@@ -104,6 +105,7 @@ public class MoreInformationComposeFragment extends Fragment {
     }
 
     private void setupVariables(View view) {
+        buttonUseCurrentLocation = view.findViewById(R.id.buttonUseCurrentLocation);
         imageViewLocationPicture = view.findViewById(R.id.imageViewLocationPicture);
         textViewLocation = view.findViewById(R.id.textViewLocation);
         editTextRecipe = view.findViewById(R.id.editTextRecipe);
@@ -191,6 +193,12 @@ public class MoreInformationComposeFragment extends Fragment {
     }
 
     private void setupOnClickListener() {
+        buttonUseCurrentLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
         buttonPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
