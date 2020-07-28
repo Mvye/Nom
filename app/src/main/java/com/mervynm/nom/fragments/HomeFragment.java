@@ -146,43 +146,35 @@ public class HomeFragment extends Fragment {
     }
 
     private void queryFollowing() {
-        final List<ParseQuery<Post>> followingUsersPosts = new ArrayList<>();
+        final ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+        query.include(Post.KEY_AUTHOR);
         final List<ParseUser> followingUsers = new ArrayList<>();
-        ParseQuery<ParseObject> following = ParseUser.getCurrentUser().getRelation("following").getQuery();
+        final ParseQuery<ParseObject> following = ParseUser.getCurrentUser().getRelation("following").getQuery();
         following.include("User");
         following.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> users, ParseException e) {
                 for (ParseObject user : users) {
-                    Log.i("HomeFragment", "the following user is " + user.getString("username"));
                     followingUsers.add((ParseUser) user);
                 }
-                for (ParseUser followingUser : followingUsers) {
-                    followingUsersPosts.add(ParseQuery.getQuery(Post.class).whereEqualTo(Post.KEY_AUTHOR, followingUser));
-                }
-                followingUsersPosts.add(ParseQuery.getQuery(Post.class).whereEqualTo(Post.KEY_AUTHOR, ParseUser.getCurrentUser()));
-                queryFollowingPosts(followingUsersPosts);
-            }
-        });
-    }
-
-    private void queryFollowingPosts(List<ParseQuery<Post>> followingUsersPosts) {
-        ParseQuery<Post> query = ParseQuery.or(followingUsersPosts);
-        query.include(Post.KEY_AUTHOR);
-        query.setLimit(20);
-        query.addDescendingOrder(Post.KEY_CREATED_AT);
-        query.findInBackground(new FindCallback<Post>() {
-            @Override
-            public void done(List<Post> postList, ParseException e) {
-                if (e != null) {
-                    Log.e("Homefragment", "Issue with getting posts", e);
-                    return;
-                }
-                for (Post post : postList) {
-                    Log.i("Homefragment", "Post " + post.getDescription() +  ", username " + post.getAuthor().getUsername() + " ," + post.getPrice());
-                }
-                adapter.clear();
-                adapter.addAll(postList);
+                followingUsers.add(ParseUser.getCurrentUser());
+                query.whereContainedIn(Post.KEY_AUTHOR, followingUsers);
+                query.setLimit(20);
+                query.addDescendingOrder(Post.KEY_CREATED_AT);
+                query.findInBackground(new FindCallback<Post>() {
+                    @Override
+                    public void done(List<Post> postList, ParseException e) {
+                        if (e != null) {
+                            Log.e("Homefragment", "Issue with getting posts", e);
+                            return;
+                        }
+                        for (Post post : postList) {
+                            Log.i("Homefragment", "Post " + post.getDescription() +  ", username " + post.getAuthor().getUsername() + " ," + post.getPrice());
+                        }
+                        adapter.clear();
+                        adapter.addAll(postList);
+                    }
+                });
             }
         });
     }
