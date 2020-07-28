@@ -29,6 +29,7 @@ import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -112,10 +113,18 @@ public class HomeFragment extends Fragment {
         double rating = postLocation.fetchIfNeeded().getDouble("rating");
         String address = postLocation.fetchIfNeeded().getString("address");
         int priceLevel = postLocation.fetchIfNeeded().getInt("priceLevel");
+        String pictureUrl;
+        if (postLocation.fetchIfNeeded().getParseFile("picture") != null) {
+            pictureUrl = Objects.requireNonNull(postLocation.fetchIfNeeded().getParseFile("picture")).getUrl();
+        }
+        else {
+            pictureUrl = "";
+        }
         LocationDialogFragment locationDialogFragment = LocationDialogFragment.newInstance(name,
                                                                                            rating,
                                                                                            address,
-                                                                                           priceLevel);
+                                                                                           priceLevel,
+                                                                                           pictureUrl);
         assert getFragmentManager() != null;
         locationDialogFragment.show(getFragmentManager(), "fragment_location_dialog");
     }

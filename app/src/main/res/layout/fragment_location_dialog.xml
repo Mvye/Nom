@@ -9,6 +9,15 @@
     android:backgroundTint="#FFFFFF"
     tools:context=".fragments.LocationDialogFragment">
 
+    <ImageView
+        android:id="@+id/imageViewLocationPicture"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:contentDescription="@string/picture_of_location_chosen"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@tools:sample/avatars" />
     <TextView
         android:id="@+id/textViewLocationName"
         android:layout_width="wrap_content"
@@ -16,20 +25,20 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewLocationPicture"
         tools:text="Intrinsic Cafe" />
     <RatingBar
         android:id="@+id/ratingBarLocationRating"
         style="@android:style/Widget.Material.RatingBar.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
         android:accessibilityLiveRegion="none"
         android:numStars="5"
         android:stepSize="0.5"
         app:layout_constraintStart_toEndOf="@+id/textViewLocationName"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/imageViewLocationPicture" />
     <TextView
         android:id="@+id/textViewLocationRating"
         android:layout_width="wrap_content"
@@ -37,14 +46,14 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
         app:layout_constraintStart_toEndOf="@+id/ratingBarLocationRating"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewLocationPicture"
         tools:text="4.6" />
     <TextView
         android:id="@+id/textViewLocationAddress"
-        android:layout_width="103dp"
-        android:layout_height="59dp"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewLocationName"
         tools:text="1 Sussex Ave #3926, Newark NJ 07103" />
@@ -52,10 +61,10 @@
         android:id="@+id/textViewLocationPriceLevel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        app:layout_constraintHorizontal_bias=".5"
         app:layout_constraintStart_toEndOf="@+id/textViewLocationAddress"
-        app:layout_constraintTop_toBottomOf="@+id/textViewLocationRating"
+        app:layout_constraintTop_toBottomOf="@+id/ratingBarLocationRating"
         tools:text="$" />
 </androidx.constraintlayout.widget.ConstraintLayout>

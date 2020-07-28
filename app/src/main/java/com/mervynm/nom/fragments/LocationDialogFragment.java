@@ -11,12 +11,17 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.mervynm.nom.R;
 
+import java.util.Objects;
+
 public class LocationDialogFragment extends DialogFragment {
+    ImageView imageViewLocationPicture;
     TextView textViewLocationName;
     RatingBar ratingBarLocationRating;
     TextView textViewLocationRating;
@@ -26,16 +31,18 @@ public class LocationDialogFragment extends DialogFragment {
     double locationRating;
     String locationAddress;
     int locationPriceLevel;
+    String pictureUrl;
 
     public LocationDialogFragment() {}
 
-    public static LocationDialogFragment newInstance(String name, double rating, String address, int priceLevel) {
+    public static LocationDialogFragment newInstance(String name, double rating, String address, int priceLevel, String pictureUrl) {
         LocationDialogFragment fragment = new LocationDialogFragment();
         Bundle args = new Bundle();
         args.putString("name", name);
         args.putDouble("rating", rating);
         args.putString("address", address);
         args.putInt("priceLevel", priceLevel);
+        args.putString("pictureUrl", pictureUrl);
         fragment.setArguments(args);
         return fragment;
     }
@@ -48,6 +55,7 @@ public class LocationDialogFragment extends DialogFragment {
             locationRating = getArguments().getDouble("rating");
             locationAddress = getArguments().getString("address");
             locationPriceLevel = getArguments().getInt("priceLevel");
+            pictureUrl = getArguments().getString("pictureUrl");
         }
     }
 
@@ -64,6 +72,7 @@ public class LocationDialogFragment extends DialogFragment {
     }
 
     private void setUpVariables(View view) {
+        imageViewLocationPicture = view.findViewById(R.id.imageViewLocationPicture);
         textViewLocationName = view.findViewById(R.id.textViewLocationName);
         ratingBarLocationRating = view.findViewById(R.id.ratingBarLocationRating);
         textViewLocationRating = view.findViewById(R.id.textViewLocationRating);
@@ -73,6 +82,14 @@ public class LocationDialogFragment extends DialogFragment {
 
     @SuppressLint("SetTextI18n")
     private void bindLocationInfo() {
+        if (!pictureUrl.equals("")) {
+            imageViewLocationPicture.setVisibility(View.VISIBLE);
+            Glide.with(Objects.requireNonNull(getContext())).load(pictureUrl)
+                                                            .into(imageViewLocationPicture);
+        }
+        else {
+            imageViewLocationPicture.setVisibility(View.GONE);
+        }
         textViewLocationName.setText(locationName);
         float rating = (float) locationRating;
         ratingBarLocationRating.setRating(rating);
