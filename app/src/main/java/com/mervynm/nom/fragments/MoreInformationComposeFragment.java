@@ -168,9 +168,7 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NotNull Place place) {
-                Log.i("MoreInfoCompose", "Place: " + place.getName() + ", " + place.getAddress() + ", " + place.getRating() + ", " + place.getPriceLevel());
-                textViewLocation.setText(String.format("Using location: %s", place.getName()));
-                postLocation = createLocation(place);
+                chooseAsLocation(place);
             }
 
             @Override
@@ -178,6 +176,12 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
                 Log.i("MoreInfoCompose", "An error occurred: " + status);
             }
         });
+    }
+
+    private void chooseAsLocation(Place place) {
+        Log.i("MoreInfoCompose", "Place: " + place.getName() + ", " + place.getAddress() + ", " + place.getRating() + ", " + place.getPriceLevel());
+        textViewLocation.setText(String.format("Using location: %s", place.getName()));
+        postLocation = createLocation(place);
     }
 
     private Location createLocation(Place place) {
@@ -238,26 +242,6 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
         });
     }
 
-    @SuppressLint("MissingPermission")
-    private void getCurrentPlace() {
-        FindCurrentPlaceRequest findCurrentPlaceRequest = FindCurrentPlaceRequest
-                .builder(Arrays.asList(Place.Field.NAME,
-                        Place.Field.ADDRESS,
-                        Place.Field.RATING,
-                        Place.Field.PRICE_LEVEL,
-                        Place.Field.PHOTO_METADATAS)).build();
-        placesClient.findCurrentPlace(findCurrentPlaceRequest).addOnSuccessListener(new OnSuccessListener<FindCurrentPlaceResponse>() {
-            @Override
-            public void onSuccess(FindCurrentPlaceResponse findCurrentPlaceResponse) {
-                for (PlaceLikelihood placeLikelihood : findCurrentPlaceResponse.getPlaceLikelihoods()) {
-                    Log.i("MoreInfoCompose", String.format("Place '%s' has likelihood: %f",
-                            placeLikelihood.getPlace().getName(),
-                            placeLikelihood.getLikelihood()));
-                }
-            }
-        });
-    }
-
     @AfterPermissionGranted(RC_LOCATION)
     private void requestToUseFineLocation() {
         String[] perm = {Manifest.permission.ACCESS_FINE_LOCATION};
@@ -265,15 +249,31 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
             getCurrentPlace();
         }
         else {
-            /*EasyPermissions.requestPermissions(
-                    new PermissionRequest.Builder(this, RC_LOCATION, perm)
-                            .setRationale("Request Fine Location Access")
-                            .setPositiveButtonText("Ok")
-                            .setNegativeButtonText("cancel")
-                            .setTheme(R.style.AppTheme)
-                            .build());*/
-            EasyPermissions.requestPermissions(this, "Request Permission", RC_LOCATION, perm);
+            EasyPermissions.requestPermissions(this, "This feature requires Location permission, request permission?", RC_LOCATION, perm);
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void getCurrentPlace() {
+        FindCurrentPlaceRequest findCurrentPlaceRequest = FindCurrentPlaceRequest
+                .builder(Arrays.asList(Place.Field.NAME,
+                        Place.Field.ADDRESS,
+                        Place.Field.RATING,
+                        Place.Field.PRICE_LEVEL,
+                        Place.Field.PHOTO_METADATAS,
+                        Place.Field.TYPES)).build();
+        placesClient.findCurrentPlace(findCurrentPlaceRequest).addOnSuccessListener(new OnSuccessListener<FindCurrentPlaceResponse>() {
+            @Override
+            public void onSuccess(FindCurrentPlaceResponse findCurrentPlaceResponse) {
+                /*for (PlaceLikelihood placeLikelihood : findCurrentPlaceResponse.getPlaceLikelihoods()) {
+                    Log.i("MoreInfoCompose", String.format("Place '%s' has likelihood: %f",
+                            placeLikelihood.getPlace().getName(),
+                            placeLikelihood.getLikelihood()));
+                    //placeLikelihood.getPlace().getTypes();
+                }*/
+                chooseAsLocation(findCurrentPlaceResponse.getPlaceLikelihoods().get(0).getPlace());
+            }
+        });
     }
 
     private void checkIfInfoInputtedIsCorrect() {
