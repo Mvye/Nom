@@ -162,7 +162,7 @@ public class ComposeFragment extends Fragment {
     }
 
     private boolean checkIfInfoInputted() {
-        description = editTextDescription.getText().toString();
+        description = editTextDescription.getText().toString().trim();
         if (photoFile != null && !description.equals("")) {
             return true;
         }

@@ -66,8 +66,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void signUp() {
-        String username = editTextUsername.getText().toString();
-        String password = editTextPassword.getText().toString();
+        String username = editTextUsername.getText().toString().trim();
+        String password = editTextPassword.getText().toString().trim();
+        if (!username.matches("[a-zA-Z0-9.? ]*")) {
+            Toast.makeText(this, "Username cannot have special characters", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (!password.matches("[a-zA-Z0-9.? ]*")) {
+            Toast.makeText(this, "Password cannot have special characters", Toast.LENGTH_SHORT).show();
+            return;
+        }
         ParseUser user = new ParseUser();
         user.setUsername(username);
         user.setPassword(password);
@@ -90,8 +98,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void login() {
-        String username = editTextUsername.getText().toString();
-        String password = editTextPassword.getText().toString();
+        String username = editTextUsername.getText().toString().trim();
+        String password = editTextPassword.getText().toString().trim();
         loginUser(username, password);
     }
 
