@@ -2,13 +2,12 @@ package com.mervynm.nom.fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -37,6 +36,7 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.hootsuite.nachos.NachoTextView;
+import com.mervynm.nom.MainActivity;
 import com.mervynm.nom.R;
 import com.mervynm.nom.models.Location;
 import com.mervynm.nom.models.Post;
@@ -375,7 +375,10 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
     }
 
     private void goToHome() {
-        assert getFragmentManager() != null;
-        getFragmentManager().beginTransaction().replace(R.id.frameLayoutContainer, new HomeFragment()).addToBackStack("MoreInfo").commit();
+        /*assert getFragmentManager() != null;
+        getFragmentManager().beginTransaction().replace(R.id.frameLayoutContainer, new HomeFragment()).addToBackStack("MoreInfo").commit();*/
+        Intent i = new Intent(getActivity(), MainActivity.class);
+        startActivity(i);
+        Objects.requireNonNull(getActivity()).finish();
     }
 }

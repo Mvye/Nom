@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentManager;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,9 +25,19 @@ import com.mervynm.nom.fragments.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    Toolbar toolbar;
     BottomNavigationView bottomNavigationBar;
     final FragmentManager fragmentManager = getSupportFragmentManager();
+
+    @Override
+    public void onBackPressed() {
+        int count = fragmentManager.getBackStackEntryCount();
+        if (count == 1 ) {
+            finish();
+        }
+        else {
+            fragmentManager.popBackStack();
+        }
+    }
 
     @Override
     protected void onStart() {
@@ -67,7 +78,10 @@ public class MainActivity extends AppCompatActivity {
                     fragment = new HomeFragment();
                 }
                 else if (item.getItemId() == R.id.action_compose) {
-                    fragment = new ComposeFragment();
+                    Intent i = new Intent(getApplicationContext(), ComposeActivity.class);
+                    startActivity(i);
+                    overridePendingTransition(R.anim.right_in, R.anim.left_out);
+                    return true;
                 }
                 else if (item.getItemId() == R.id.action_profile) {
                     fragment = new ProfileFragment();

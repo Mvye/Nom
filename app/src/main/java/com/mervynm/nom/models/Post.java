@@ -1,17 +1,12 @@
 package com.mervynm.nom.models;
 
-import androidx.annotation.NonNull;
-
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
-import org.json.JSONArray;
-
 import java.util.List;
-import java.util.ListIterator;
 
 @ParseClassName("Post")
 public class Post extends ParseObject {
