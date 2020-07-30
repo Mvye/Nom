@@ -17,8 +17,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.mervynm.nom.R;
@@ -41,6 +45,7 @@ import java.util.Objects;
 public class HomeFragment extends Fragment {
 
     Toolbar toolbar;
+    SearchView searchView;
     SwipeRefreshLayout swipeContainer;
     RecyclerView recyclerViewPosts;
     List<Post> posts;
@@ -139,7 +144,22 @@ public class HomeFragment extends Fragment {
 
     protected void setupToolbar(View view) {
         toolbar = view.findViewById(R.id.toolbar);
-        SearchView searchView = (SearchView) toolbar.getMenu().findItem(R.id.search).getActionView();
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.sortCreatedAt) {
+                    Toast.makeText(getContext(), "sort created at", Toast.LENGTH_SHORT).show();
+                }
+                if (item.getItemId() == R.id.sortPrice) {
+                    Toast.makeText(getContext(), "sort price", Toast.LENGTH_SHORT).show();
+                }
+                if (item.getItemId() == R.id.sortDistance) {
+                    Toast.makeText(getContext(), "sort distance", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            }
+        });
+        searchView = (SearchView) toolbar.getMenu().findItem(R.id.search).getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {

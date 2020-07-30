@@ -7,4 +7,14 @@
         android:icon="@drawable/ic_search"
         app:showAsAction="collapseActionView|ifRoom"
         app:actionViewClass="androidx.appcompat.widget.SearchView" />
+    <item
+        android:id="@+id/sortCreatedAt"
+        android:title="@string/sort_by_date_created"/>
+    <item
+        android:id="@+id/sortPrice"
+        android:title="@string/sort_by_price"/>
+    <item
+        android:id="@+id/sortDistance"
+        android:title="@string/sort_by_distance_from_me"/>
+
 </menu>
