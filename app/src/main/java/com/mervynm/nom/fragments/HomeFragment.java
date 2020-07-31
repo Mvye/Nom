@@ -3,6 +3,7 @@ package com.mervynm.nom.fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -167,6 +168,8 @@ public class HomeFragment extends Fragment {
 
     protected void setupToolbar(View view) {
         toolbar = view.findViewById(R.id.toolbar);
+        Drawable drawable = getResources().getDrawable(R.drawable.ic_sort);
+        toolbar.setOverflowIcon(drawable);
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
