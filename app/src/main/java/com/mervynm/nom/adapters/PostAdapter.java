@@ -108,12 +108,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
         }
     };
 
-    public void sortByDistance(double lat, double longi) throws ParseException {
+    public void sortByDistance(double lat, double longi) {
         TreeMap<Double, Post> map = new TreeMap<>();
         List<Post> noLocationOrLatLong = new ArrayList<>();
         for (Post post : posts) {
             if (post.getLocation() != null) {
-                ParseGeoPoint latLong = post.getLocation().fetchIfNeeded().getParseGeoPoint("latLong");
+                ParseGeoPoint latLong = null;
+                try {
+                    latLong = post.getLocation().fetchIfNeeded().getParseGeoPoint("latLong");
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    Log.i("PostAdapter", "this is the post causing trouble " + post.getObjectId());
+                    noLocationOrLatLong.add(post);
+                }
                 if (latLong != null) {
                     map.put(distance(latLong.getLatitude(), latLong.getLongitude(), lat, longi), post);
                 }

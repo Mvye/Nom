@@ -41,9 +41,11 @@ import com.mervynm.nom.MainActivity;
 import com.mervynm.nom.R;
 import com.mervynm.nom.models.Location;
 import com.mervynm.nom.models.Post;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -182,9 +184,65 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
     }
 
     private void chooseAsLocation(Place place) {
-        Log.i("MoreInfoCompose", "Place: " + place.getName() + ", " + place.getAddress() + ", " + place.getRating() + ", " + place.getPriceLevel() + place.getLatLng());
+        Log.i("MoreInfoCompose", "Place: " + place.getName() + ", " + place.getAddress() + ", " + place.getRating() + ", " + place.getPriceLevel());
         textViewLocation.setText(String.format("Using location: %s", place.getName()));
-        postLocation = createLocation(place);
+        checkIfLocationExists(place);
+    }
+
+    private void checkIfLocationExists(final Place place) {
+        ParseQuery<Location> query = ParseQuery.getQuery(Location.class);
+        query.include(Location.KEY_ADDRESS);
+        query.whereEqualTo(Location.KEY_ADDRESS, place.getAddress());
+        query.getFirstInBackground(new GetCallback<Location>() {
+            @Override
+            public void done(Location object, ParseException e) {
+                if (e == null) {
+                    postLocation = object;
+                    updateLocation(place);
+                }
+                else if (e.getCode() == ParseException.OBJECT_NOT_FOUND) {
+                    postLocation = createLocation(place);
+                }
+                else {
+                    Log.i("MoreInfoCompose", "error in finding location");
+                }
+            }
+        });
+    }
+
+    private void updateLocation(Place place) {
+        LatLng latLng = place.getLatLng();
+        if (latLng != null) {
+            ParseGeoPoint placeLatLong = new ParseGeoPoint(latLng.latitude, latLng.longitude);
+            if (postLocation.getLatLong() == null || !postLocation.getLatLong().equals(placeLatLong)) {
+                postLocation.setLatLong(placeLatLong);
+                Log.i("MoreInfoCompose", "updated " + postLocation.getName() + "'s LatLong");
+            }
+        }
+        if (place.getRating() != null && postLocation.getRating() != place.getRating()) {
+            postLocation.setRating(place.getRating());
+            Log.i("MoreInfoCompose", "updated " + postLocation.getName() + "'s Rating");
+        }
+        if (place.getPriceLevel() != null && postLocation.getPriceLevel() != place.getPriceLevel()) {
+            postLocation.setPriceLevel(place.getPriceLevel());
+            Log.i("MoreInfoCompose", "updated " + postLocation.getName() + "'s Price Level");
+        }
+        final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
+        if (metadata != null && !metadata.isEmpty()) {
+            final PhotoMetadata photoMetadata = metadata.get(0);
+            final String attributions = photoMetadata.getAttributions();
+            final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                    .build();
+            placesClient.fetchPhoto(photoRequest).addOnSuccessListener(new OnSuccessListener<FetchPhotoResponse>() {
+                @Override
+                public void onSuccess(FetchPhotoResponse fetchPhotoResponse) {
+                    Bitmap bitmap = fetchPhotoResponse.getBitmap();
+                    postLocation.setPicture(persistImage(bitmap));
+                    imageViewLocationPicture.setImageBitmap(bitmap);
+                }
+            });
+            Log.i("MoreInfoCompose", "updated " + postLocation.getName() + "'s Picture");
+        }
     }
 
     private Location createLocation(Place place) {
