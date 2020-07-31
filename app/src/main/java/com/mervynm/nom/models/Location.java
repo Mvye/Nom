@@ -2,12 +2,14 @@ package com.mervynm.nom.models;
 
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 
 @ParseClassName("Location")
 public class Location extends ParseObject {
     public static final String KEY_NAME = "name";
     public static final String KEY_ADDRESS = "address";
+    public static final String KEY_LAT_LONG = "latLong";
     public static final String KEY_RATING = "rating";
     public static final String KEY_PRICE_LEVEL = "priceLevel";
     public static final String KEY_PICTURE = "picture";
@@ -28,6 +30,14 @@ public class Location extends ParseObject {
 
     public void setAddress(String address) {
         put(KEY_ADDRESS, address);
+    }
+
+    public ParseGeoPoint getLatLong() {
+        return getParseGeoPoint(KEY_LAT_LONG);
+    }
+
+    public void setLatLong(ParseGeoPoint latLong) {
+        put(KEY_LAT_LONG, latLong);
     }
 
     public double getRating() {

@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
@@ -42,6 +43,7 @@ import com.mervynm.nom.models.Location;
 import com.mervynm.nom.models.Post;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -164,7 +166,8 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
                 Place.Field.ADDRESS,
                 Place.Field.RATING,
                 Place.Field.PRICE_LEVEL,
-                Place.Field.PHOTO_METADATAS));
+                Place.Field.PHOTO_METADATAS,
+                Place.Field.LAT_LNG));
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(@NotNull Place place) {
@@ -179,7 +182,7 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
     }
 
     private void chooseAsLocation(Place place) {
-        Log.i("MoreInfoCompose", "Place: " + place.getName() + ", " + place.getAddress() + ", " + place.getRating() + ", " + place.getPriceLevel());
+        Log.i("MoreInfoCompose", "Place: " + place.getName() + ", " + place.getAddress() + ", " + place.getRating() + ", " + place.getPriceLevel() + place.getLatLng());
         textViewLocation.setText(String.format("Using location: %s", place.getName()));
         postLocation = createLocation(place);
     }
@@ -188,6 +191,10 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
         final Location location = new Location();
         location.setName(place.getName());
         location.setAddress(place.getAddress());
+        LatLng latLng = place.getLatLng();
+        if (latLng != null) {
+            location.setLatLong(new ParseGeoPoint(latLng.latitude, latLng.longitude));
+        }
         if (place.getRating() != null) {
             location.setRating(place.getRating());
         }
@@ -260,8 +267,7 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
                         Place.Field.ADDRESS,
                         Place.Field.RATING,
                         Place.Field.PRICE_LEVEL,
-                        Place.Field.PHOTO_METADATAS,
-                        Place.Field.TYPES)).build();
+                        Place.Field.PHOTO_METADATAS)).build();
         placesClient.findCurrentPlace(findCurrentPlaceRequest).addOnSuccessListener(new OnSuccessListener<FindCurrentPlaceResponse>() {
             @Override
             public void onSuccess(FindCurrentPlaceResponse findCurrentPlaceResponse) {
@@ -375,8 +381,6 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
     }
 
     private void goToHome() {
-        /*assert getFragmentManager() != null;
-        getFragmentManager().beginTransaction().replace(R.id.frameLayoutContainer, new HomeFragment()).addToBackStack("MoreInfo").commit();*/
         Intent i = new Intent(getActivity(), MainActivity.class);
         startActivity(i);
         Objects.requireNonNull(getActivity()).finish();
