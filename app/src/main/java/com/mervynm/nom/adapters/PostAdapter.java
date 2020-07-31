@@ -122,7 +122,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
                     noLocationOrLatLong.add(post);
                 }
                 if (latLong != null) {
-                    map.put(distance(latLong.getLatitude(), latLong.getLongitude(), lat, longi), post);
+                    Double distance = distance(latLong.getLatitude(), latLong.getLongitude(), lat, longi);
+                    Log.i("PostAdapter", "sortByDistance: " + distance);
+                    map.put(distance, post);
                 }
                 else {
                     noLocationOrLatLong.add(post);
@@ -135,6 +137,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
         posts.clear();
         posts.addAll(map.values());
         posts.addAll(noLocationOrLatLong);
+        notifyDataSetChanged();
         Log.i("PostAdapter", "sorted");
     }
 
