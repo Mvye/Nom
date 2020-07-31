@@ -1,5 +1,7 @@
 package com.mervynm.nom.fragments;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,6 +27,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.mervynm.nom.R;
 import com.mervynm.nom.adapters.PostAdapter;
 import com.mervynm.nom.models.Location;
@@ -42,11 +48,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
 public class HomeFragment extends Fragment {
 
+    private static final int RC_LOCATION = 33;
     Toolbar toolbar;
     SearchView searchView;
     SwipeRefreshLayout swipeContainer;
+    FusedLocationProviderClient fusedLocationProviderClient;
     RecyclerView recyclerViewPosts;
     List<Post> posts;
     PostAdapter adapter;
@@ -56,6 +67,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getContext()));
         setHasOptionsMenu(true);
     }
 
@@ -71,6 +83,17 @@ public class HomeFragment extends Fragment {
         setupRecyclerView(view);
         setupToolbar(view);
         queryPosts();
+    }
+
+    @AfterPermissionGranted(RC_LOCATION)
+    private void requestToUseFineLocation() {
+        String[] perm = {Manifest.permission.ACCESS_FINE_LOCATION};
+        if (EasyPermissions.hasPermissions(Objects.requireNonNull(getContext()), perm)) {
+            sortByDistance();
+        }
+        else {
+            EasyPermissions.requestPermissions(this, "This feature requires Location permission, request permission?", RC_LOCATION, perm);
+        }
     }
 
     private void setupSwipeRefreshLayout(View view) {
@@ -154,7 +177,7 @@ public class HomeFragment extends Fragment {
                     Toast.makeText(getContext(), "sort price", Toast.LENGTH_SHORT).show();
                 }
                 if (item.getItemId() == R.id.sortDistance) {
-                    Toast.makeText(getContext(), "sort distance", Toast.LENGTH_SHORT).show();
+                    requestToUseFineLocation();
                 }
                 return true;
             }
@@ -170,6 +193,28 @@ public class HomeFragment extends Fragment {
             public boolean onQueryTextChange(String newText) {
                 adapter.getFilter().filter(newText);
                 return false;
+            }
+        });
+    }
+
+    @SuppressLint("MissingPermission")
+    private void sortByDistance() {
+        Task<android.location.Location> locationResult = fusedLocationProviderClient.getLastLocation();
+        locationResult.addOnCompleteListener(new OnCompleteListener<android.location.Location>() {
+            @Override
+            public void onComplete(@NonNull Task<android.location.Location> task) {
+                if (task.isSuccessful()) {
+                    android.location.Location lastKnownLocation = task.getResult();
+                    assert lastKnownLocation != null;
+                    try {
+                        adapter.sortByDistance(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else {
+                    Toast.makeText(getContext(), "Could not get location", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

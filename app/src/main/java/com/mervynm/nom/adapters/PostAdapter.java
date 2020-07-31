@@ -23,6 +23,7 @@ import com.mervynm.nom.R;
 import com.mervynm.nom.models.Post;
 import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -87,7 +88,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
             }
             else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
-                TreeMap<Float, Post> map = new TreeMap<>();
                 for (Post post : postListFull)  {
                     if (!post.getTags().isEmpty() && post.getTagsAsLowerCase().contains(filterPattern)) {
                         filteredList.add(post);
@@ -108,9 +108,27 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
         }
     };
 
-    public void sortByDistance(double lat, double lang) {
-        //code goes here
-        //call distance here
+    public void sortByDistance(double lat, double longi) throws ParseException {
+        TreeMap<Double, Post> map = new TreeMap<>();
+        List<Post> noLocationOrLatLong = new ArrayList<>();
+        for (Post post : posts) {
+            if (post.getLocation() != null) {
+                ParseGeoPoint latLong = post.getLocation().fetchIfNeeded().getParseGeoPoint("latLong");
+                if (latLong != null) {
+                    map.put(distance(latLong.getLatitude(), latLong.getLongitude(), lat, longi), post);
+                }
+                else {
+                    noLocationOrLatLong.add(post);
+                }
+            }
+            else {
+                noLocationOrLatLong.add(post);
+            }
+        }
+        posts.clear();
+        posts.addAll(map.values());
+        posts.addAll(noLocationOrLatLong);
+        Log.i("PostAdapter", "sorted");
     }
 
     public double distance(double lat1, double lng1, double lat2, double lng2) {
