@@ -2,12 +2,14 @@ package com.mervynm.nom.fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -23,7 +25,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
@@ -69,6 +73,11 @@ import pub.devrel.easypermissions.PermissionRequest;
 public class MoreInformationComposeFragment extends Fragment implements EasyPermissions.PermissionCallbacks{
 
     private static final int RC_LOCATION = 33;
+    // Used for selecting the current place.
+    private static final int M_MAX_ENTRIES = 5;
+    private String[] likelyPlaceNames;
+    private Place[] likelyPlace;
+
     Button buttonUseCurrentLocation;
     ImageView imageViewLocationPicture;
     TextView textViewLocation;
@@ -296,7 +305,12 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
         buttonUseCurrentLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                requestToUseFineLocation();
+                if (likelyPlaceNames == null) {
+                    requestToUseFineLocation();
+                }
+                else {
+                    openPlacesDialog();
+                }
             }
         });
         buttonPost.setOnClickListener(new View.OnClickListener() {
@@ -329,15 +343,39 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
         placesClient.findCurrentPlace(findCurrentPlaceRequest).addOnSuccessListener(new OnSuccessListener<FindCurrentPlaceResponse>() {
             @Override
             public void onSuccess(FindCurrentPlaceResponse findCurrentPlaceResponse) {
-                /*for (PlaceLikelihood placeLikelihood : findCurrentPlaceResponse.getPlaceLikelihoods()) {
-                    Log.i("MoreInfoCompose", String.format("Place '%s' has likelihood: %f",
-                            placeLikelihood.getPlace().getName(),
-                            placeLikelihood.getLikelihood()));
-                    //placeLikelihood.getPlace().getTypes();
-                }*/
-                chooseAsLocation(findCurrentPlaceResponse.getPlaceLikelihoods().get(0).getPlace());
+                int count = Math.min(findCurrentPlaceResponse.getPlaceLikelihoods().size(), M_MAX_ENTRIES);
+
+                int i = 0;
+                likelyPlaceNames = new String[count];
+                likelyPlace = new Place[count];
+
+                for (PlaceLikelihood placeLikelihood : findCurrentPlaceResponse.getPlaceLikelihoods()) {
+                    likelyPlaceNames[i] = placeLikelihood.getPlace().getName();
+                    likelyPlace[i] = placeLikelihood.getPlace();
+                    i++;
+                    if (i > (count - 1)) {
+                        break;
+                    }
+                }
+                openPlacesDialog();
             }
         });
+    }
+
+    private void openPlacesDialog() {
+        // Ask the user to choose the place where they are now.
+        DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                chooseAsLocation(likelyPlace[which]);
+            }
+        };
+
+        // Display the dialog.
+        AlertDialog dialog = new AlertDialog.Builder(Objects.requireNonNull(getContext()))
+                .setTitle("Pick a Place")
+                .setItems(likelyPlaceNames, listener)
+                .show();
     }
 
     private void checkIfInfoInputtedIsCorrect() {

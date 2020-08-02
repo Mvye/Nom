@@ -208,9 +208,14 @@ public class HomeFragment extends Fragment {
             public void onComplete(@NonNull Task<android.location.Location> task) {
                 if (task.isSuccessful()) {
                     android.location.Location lastKnownLocation = task.getResult();
-                    assert lastKnownLocation != null;
-                    adapter.sortByDistance(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
-                    Log.i("HomeFragment", "the coords are " + lastKnownLocation.getLatitude() + " " + lastKnownLocation.getLongitude());
+                    //assert lastKnownLocation != null;
+                    if (lastKnownLocation != null) {
+                        adapter.sortByDistance(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
+                        Log.i("HomeFragment", "the coords are " + lastKnownLocation.getLatitude() + " " + lastKnownLocation.getLongitude());
+                    }
+                    else {
+                        Toast.makeText(getContext(), "Could not get location", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else {
                     Toast.makeText(getContext(), "Could not get location", Toast.LENGTH_SHORT).show();
