@@ -339,7 +339,8 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
                         Place.Field.ADDRESS,
                         Place.Field.RATING,
                         Place.Field.PRICE_LEVEL,
-                        Place.Field.PHOTO_METADATAS)).build();
+                        Place.Field.PHOTO_METADATAS,
+                        Place.Field.LAT_LNG)).build();
         placesClient.findCurrentPlace(findCurrentPlaceRequest).addOnSuccessListener(new OnSuccessListener<FindCurrentPlaceResponse>() {
             @Override
             public void onSuccess(FindCurrentPlaceResponse findCurrentPlaceResponse) {
