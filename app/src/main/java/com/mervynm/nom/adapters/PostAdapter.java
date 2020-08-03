@@ -128,7 +128,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
                 }
                 if (latLong != null) {
                     Double distance = distance(latLong.getLatitude(), latLong.getLongitude(), lat, longi);
-                    Log.i("PostAdapter", "sortByDistance: " + distance);
+                    /*if (map.containsKey(distance)) {
+                        List<Post> otherPostsWithSamePrice = map.get(distance);
+                        assert otherPostsWithSamePrice != null;
+                        otherPostsWithSamePrice.add(post);
+                        map.put(distance, otherPostsWithSamePrice);
+                    }
+                    else {
+                        List<Post> onePostList = new ArrayList<>(1);
+                        onePostList.add(post);
+                        map.put(distance, onePostList);
+                    }*/
                     map.put(distance, post);
                 }
                 else {
@@ -161,15 +171,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
         for (Post post : posts) {
             double price = post.getPrice();
             if (price != 0) {
-                //noinspection SuspiciousMethodCalls
-                if (map.containsValue(price)) {
+                if (map.containsKey(price)) {
                     List<Post> otherPostsWithSamePrice = map.get(price);
                     assert otherPostsWithSamePrice != null;
                     otherPostsWithSamePrice.add(post);
                     map.put(price, otherPostsWithSamePrice);
                 }
                 else {
-                    List<Post> onePostList = new ArrayList<>(1);
+                    List<Post> onePostList = new ArrayList<>();
                     onePostList.add(post);
                     map.put(post.getPrice(), onePostList);
                 }
