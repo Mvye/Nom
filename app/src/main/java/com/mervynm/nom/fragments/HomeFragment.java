@@ -238,7 +238,6 @@ public class HomeFragment extends Fragment {
                 }
                 followingUsers.add(ParseUser.getCurrentUser());
                 query.whereContainedIn(Post.KEY_AUTHOR, followingUsers);
-                query.setLimit(20);
                 query.addDescendingOrder(Post.KEY_CREATED_AT);
                 query.findInBackground(new FindCallback<Post>() {
                     @Override
