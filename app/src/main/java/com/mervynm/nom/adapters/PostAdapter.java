@@ -114,7 +114,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
     };
 
     public void sortByDistance(double lat, double longi) {
-        TreeMap<Double, Post> map = new TreeMap<>();
+        TreeMap<Double, List<Post>> map = new TreeMap<>();
         List<Post> noLocationOrLatLong = new ArrayList<>();
         for (Post post : posts) {
             if (post.getLocation() != null) {
@@ -128,7 +128,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
                 }
                 if (latLong != null) {
                     Double distance = distance(latLong.getLatitude(), latLong.getLongitude(), lat, longi);
-                    /*if (map.containsKey(distance)) {
+                    if (map.containsKey(distance)) {
                         List<Post> otherPostsWithSamePrice = map.get(distance);
                         assert otherPostsWithSamePrice != null;
                         otherPostsWithSamePrice.add(post);
@@ -138,8 +138,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
                         List<Post> onePostList = new ArrayList<>(1);
                         onePostList.add(post);
                         map.put(distance, onePostList);
-                    }*/
-                    map.put(distance, post);
+                    }
                 }
                 else {
                     noLocationOrLatLong.add(post);
@@ -150,7 +149,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
             }
         }
         posts.clear();
-        posts.addAll(map.values());
+        Collection<List<Post>> values = map.values();
+        for (List<Post> postsWithDistanceSorted : values) {
+            posts.addAll(postsWithDistanceSorted);
+        }
         posts.addAll(noLocationOrLatLong);
         notifyDataSetChanged();
         Log.i("PostAdapter", "sorted");
