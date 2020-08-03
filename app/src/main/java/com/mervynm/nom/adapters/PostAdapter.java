@@ -361,6 +361,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
             if (post.getPrice() == 0) {
                 imageViewPrice.setVisibility(View.GONE);
             }
+            else {
+                imageViewPrice.setVisibility(View.VISIBLE);
+            }
             if (!post.getHomemade() || post.getRecipeUrl() == null) {
                 imageViewRecipe.setVisibility(View.GONE);
             }
