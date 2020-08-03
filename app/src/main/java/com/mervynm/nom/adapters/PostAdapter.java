@@ -29,9 +29,14 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> implements Filterable{
 
@@ -148,6 +153,38 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.sin(dLng / 2) * Math.sin(dLng / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return earthRadius * c;
+    }
+
+    public void sortByPrice() {
+        TreeMap<Double, List<Post>> map = new TreeMap<>();
+        List<Post> postsWithNoPrice = new ArrayList<>();
+        for (Post post : posts) {
+            double price = post.getPrice();
+            if (price != 0) {
+                //noinspection SuspiciousMethodCalls
+                if (map.containsValue(price)) {
+                    List<Post> otherPostsWithSamePrice = map.get(price);
+                    assert otherPostsWithSamePrice != null;
+                    otherPostsWithSamePrice.add(post);
+                    map.put(price, otherPostsWithSamePrice);
+                }
+                else {
+                    List<Post> onePostList = new ArrayList<>(1);
+                    onePostList.add(post);
+                    map.put(post.getPrice(), onePostList);
+                }
+            }
+            else {
+                postsWithNoPrice.add(post);
+            }
+        }
+        posts.clear();
+        Collection<List<Post>> values = map.values();
+        for (List<Post> postsWithPriceSorted : values) {
+            posts.addAll(postsWithPriceSorted);
+        }
+        posts.addAll(postsWithNoPrice);
+        notifyDataSetChanged();
     }
 
     public void clear() {

@@ -177,7 +177,7 @@ public class HomeFragment extends Fragment {
                     Toast.makeText(getContext(), "sort created at", Toast.LENGTH_SHORT).show();
                 }
                 if (item.getItemId() == R.id.sortPrice) {
-                    Toast.makeText(getContext(), "sort price", Toast.LENGTH_SHORT).show();
+                    sortByPrice();
                 }
                 if (item.getItemId() == R.id.sortDistance) {
                     requestToUseFineLocation();
@@ -198,6 +198,10 @@ public class HomeFragment extends Fragment {
                 return false;
             }
         });
+    }
+
+    private void sortByPrice() {
+        adapter.sortByPrice();
     }
 
     @SuppressLint("MissingPermission")
