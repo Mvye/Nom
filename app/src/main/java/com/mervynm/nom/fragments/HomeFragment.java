@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,24 +25,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.mervynm.nom.R;
 import com.mervynm.nom.adapters.PostAdapter;
 import com.mervynm.nom.models.Location;
 import com.mervynm.nom.models.Post;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
-import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -62,6 +59,7 @@ public class HomeFragment extends Fragment {
     RecyclerView recyclerViewPosts;
     List<Post> posts;
     PostAdapter adapter;
+    int lastSortUsed = 0;
 
     public HomeFragment() {}
 
@@ -170,14 +168,19 @@ public class HomeFragment extends Fragment {
         toolbar = view.findViewById(R.id.toolbar);
         Drawable drawable = getResources().getDrawable(R.drawable.ic_sort);
         toolbar.setOverflowIcon(drawable);
+        toolbar.getMenu().findItem(R.id.sortCreatedAt).setTitle(getSpannableString(getResources().getString(R.string.sort_by_date_created)));
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                setMenuItemsToNormal();
+                item.setTitle(getSpannableString(item.getTitle()));
                 if (item.getItemId() == R.id.sortCreatedAt) {
                     sortByCreatedAt();
+                    lastSortUsed = 0;
                 }
                 if (item.getItemId() == R.id.sortPrice) {
                     sortByPrice();
+                    lastSortUsed = 1;
                 }
                 if (item.getItemId() == R.id.sortDistance) {
                     requestToUseFineLocation();
@@ -200,6 +203,18 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    private void setMenuItemsToNormal() {
+        toolbar.getMenu().findItem(R.id.sortCreatedAt).setTitle(getResources().getString(R.string.sort_by_date_created));
+        toolbar.getMenu().findItem(R.id.sortPrice).setTitle(getResources().getString(R.string.sort_by_price));
+        toolbar.getMenu().findItem(R.id.sortDistance).setTitle(getResources().getString(R.string.sort_by_distance_from_me));
+    }
+
+    private SpannableString getSpannableString(CharSequence title) {
+        SpannableString spannableString = new SpannableString(title.toString());
+        spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimary)), 0, spannableString.length(), 0);
+        return spannableString;
+    }
+
     private void sortByCreatedAt() {
         adapter.sortByCreatedAt();
     }
@@ -216,20 +231,31 @@ public class HomeFragment extends Fragment {
             public void onComplete(@NonNull Task<android.location.Location> task) {
                 if (task.isSuccessful()) {
                     android.location.Location lastKnownLocation = task.getResult();
-                    //assert lastKnownLocation != null;
                     if (lastKnownLocation != null) {
                         adapter.sortByDistance(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                         Log.i("HomeFragment", "the coords are " + lastKnownLocation.getLatitude() + " " + lastKnownLocation.getLongitude());
                     }
                     else {
                         Toast.makeText(getContext(), "Could not get location", Toast.LENGTH_SHORT).show();
+                        changeColoredMenuItem();
                     }
                 }
                 else {
                     Toast.makeText(getContext(), "Could not get location", Toast.LENGTH_SHORT).show();
+                    changeColoredMenuItem();
                 }
             }
         });
+    }
+
+    private void changeColoredMenuItem() {
+        setMenuItemsToNormal();
+        if (lastSortUsed == 0) {
+            toolbar.getMenu().findItem(R.id.sortCreatedAt).setTitle(getSpannableString(getResources().getString(R.string.sort_by_date_created)));
+        }
+        else {
+            toolbar.getMenu().findItem(R.id.sortPrice).setTitle(getSpannableString(getResources().getString(R.string.sort_by_price)));
+        }
     }
 
     protected void queryPosts() {
