@@ -30,13 +30,9 @@ import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> implements Filterable{
 
@@ -51,6 +47,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
     Context context;
     List<Post> posts;
     List<Post> postListFull;
+    List<Post> postsCreatedAt;
     OnLocationClickListener locationClickListener;
     OnRecipieClickListener recipieClickListener;
 
@@ -58,6 +55,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
         this.context = context;
         this.posts = posts;
         postListFull = new ArrayList<>(posts);
+        postsCreatedAt = new ArrayList<>(posts);
         this.locationClickListener = locationClickListener;
         this.recipieClickListener = recipieClickListener;
     }
@@ -104,14 +102,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
             return results;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
             posts.clear();
-            //noinspection unchecked
+            postsCreatedAt.clear();
             posts.addAll( (List<Post>) filterResults.values);
+            postsCreatedAt.addAll( (List<Post>) filterResults.values);
             notifyDataSetChanged();
         }
     };
+
+    public void sortByCreatedAt() {
+        posts.clear();
+        posts.addAll(postsCreatedAt);
+        notifyDataSetChanged();
+    }
 
     public void sortByDistance(double lat, double longi) {
         TreeMap<Double, List<Post>> map = new TreeMap<>();
@@ -201,12 +207,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
     public void clear() {
         posts.clear();
         postListFull.clear();
+        postsCreatedAt.clear();
         notifyDataSetChanged();
     }
 
     public void addAll(List<Post> postList) {
         posts.addAll(postList);
         postListFull.addAll(postList);
+        postsCreatedAt.addAll(postList);
         notifyDataSetChanged();
     }
 

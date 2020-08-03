@@ -174,7 +174,7 @@ public class HomeFragment extends Fragment {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 if (item.getItemId() == R.id.sortCreatedAt) {
-                    Toast.makeText(getContext(), "sort created at", Toast.LENGTH_SHORT).show();
+                    sortByCreatedAt();
                 }
                 if (item.getItemId() == R.id.sortPrice) {
                     sortByPrice();
@@ -198,6 +198,10 @@ public class HomeFragment extends Fragment {
                 return false;
             }
         });
+    }
+
+    private void sortByCreatedAt() {
+        adapter.sortByCreatedAt();
     }
 
     private void sortByPrice() {
