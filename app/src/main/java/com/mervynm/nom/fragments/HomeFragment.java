@@ -3,6 +3,7 @@ package com.mervynm.nom.fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,9 +30,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.mervynm.nom.R;
 import com.mervynm.nom.adapters.PostAdapter;
@@ -61,12 +65,14 @@ public class HomeFragment extends Fragment {
     PostAdapter adapter;
     int lastSortUsed = 0;
 
-    public HomeFragment() {}
+    public HomeFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getContext()));
+        requestLocationFromFusedLocationProviderClient();
         setHasOptionsMenu(true);
     }
 
@@ -89,8 +95,7 @@ public class HomeFragment extends Fragment {
         String[] perm = {Manifest.permission.ACCESS_FINE_LOCATION};
         if (EasyPermissions.hasPermissions(Objects.requireNonNull(getContext()), perm)) {
             sortByDistance();
-        }
-        else {
+        } else {
             EasyPermissions.requestPermissions(this, "This feature requires Location permission, request permission?", RC_LOCATION, perm);
         }
     }
@@ -143,15 +148,14 @@ public class HomeFragment extends Fragment {
         String pictureUrl;
         if (postLocation.fetchIfNeeded().getParseFile("picture") != null) {
             pictureUrl = Objects.requireNonNull(postLocation.fetchIfNeeded().getParseFile("picture")).getUrl();
-        }
-        else {
+        } else {
             pictureUrl = "";
         }
         LocationDialogFragment locationDialogFragment = LocationDialogFragment.newInstance(name,
-                                                                                           rating,
-                                                                                           address,
-                                                                                           priceLevel,
-                                                                                           pictureUrl);
+                rating,
+                address,
+                priceLevel,
+                pictureUrl);
         assert getFragmentManager() != null;
         locationDialogFragment.show(getFragmentManager(), "fragment_location_dialog");
     }
@@ -234,18 +238,36 @@ public class HomeFragment extends Fragment {
                     if (lastKnownLocation != null) {
                         adapter.sortByDistance(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude());
                         Log.i("HomeFragment", "the coords are " + lastKnownLocation.getLatitude() + " " + lastKnownLocation.getLongitude());
-                    }
-                    else {
-                        Toast.makeText(getContext(), "Could not get location", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Could not get location 1", Toast.LENGTH_SHORT).show();
                         changeColoredMenuItem();
                     }
-                }
-                else {
-                    Toast.makeText(getContext(), "Could not get location", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Could not get location 2", Toast.LENGTH_SHORT).show();
                     changeColoredMenuItem();
                 }
             }
         });
+    }
+
+    private void requestLocationFromFusedLocationProviderClient() {
+        LocationRequest mLocationRequest = LocationRequest.create();
+        mLocationRequest.setInterval(60000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        LocationCallback mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    Log.i("HomeFragment", "onLocationResult: issues getting location");
+                }
+            }
+        };
+        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestToUseFineLocation();
+            return;
+        }
+        LocationServices.getFusedLocationProviderClient(getContext()).requestLocationUpdates(mLocationRequest, mLocationCallback, null);
     }
 
     private void changeColoredMenuItem() {

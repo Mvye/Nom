@@ -364,15 +364,12 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
     }
 
     private void openPlacesDialog() {
-        // Ask the user to choose the place where they are now.
         DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 chooseAsLocation(likelyPlace[which]);
             }
         };
-
-        // Display the dialog.
         AlertDialog dialog = new AlertDialog.Builder(Objects.requireNonNull(getContext()))
                 .setTitle("Pick a Place")
                 .setItems(likelyPlaceNames, listener)
