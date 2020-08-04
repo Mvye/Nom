@@ -89,9 +89,7 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Issue with sign up", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Toast.makeText(LoginActivity.this, "Account created! Sign in with new account", Toast.LENGTH_LONG).show();
-                editTextUsername.setText(null);
-                editTextPassword.setText(null);
+                Toast.makeText(LoginActivity.this, "Account created! Login with new account", Toast.LENGTH_LONG).show();
             }
         });
     }
