@@ -7,6 +7,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
@@ -23,6 +24,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.target.Target;
 import com.hootsuite.nachos.NachoTextView;
 import com.mervynm.nom.R;
+import com.mervynm.nom.external.OnDoubleTapListener;
 import com.mervynm.nom.external.TimeFormatter;
 import com.mervynm.nom.models.Post;
 import com.parse.GetCallback;
@@ -280,6 +282,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
 
         private void onLikeClick() {
             imageViewLike.setClickable(false);
+            imageViewPostImage.setClickable(false);
             final Post clickedPost = posts.get(getAdapterPosition());
             final boolean[] noIssuesWithSaving = {true};
             ParseQuery<ParseUser> query = clickedPost.getUsersWhoLiked().getQuery();
@@ -311,6 +314,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
                         });
                     }
                     imageViewLike.setClickable(true);
+                    imageViewPostImage.setClickable(false);
                 }
             });
         }
@@ -336,7 +340,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
             Toast.makeText(context, "you have pressed recipe at position " + getAdapterPosition(), Toast.LENGTH_SHORT).show();
         }
 
-        @SuppressLint("DefaultLocale")
+        @SuppressLint({"DefaultLocale", "ClickableViewAccessibility"})
         public void bind(Post post) {
             Glide.with(context).load(Objects.requireNonNull(post.getAuthor().getParseFile("profilePicture")).getUrl())
                                .transform(new CircleCrop())
@@ -346,6 +350,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
             Glide.with(context).load(post.getImage().getUrl())
                                .override(Target.SIZE_ORIGINAL)
                                .into(imageViewPostImage);
+            imageViewPostImage.setOnTouchListener(new OnDoubleTapListener(context) {
+                @Override
+                public void onDoubleTap(MotionEvent e) {
+                    onLikeClick();
+                }
+            });
             if (post.getLocation() != null) {
                 imageViewLocation.setVisibility(View.VISIBLE);
                 imageViewLocation.setOnClickListener(new View.OnClickListener() {
