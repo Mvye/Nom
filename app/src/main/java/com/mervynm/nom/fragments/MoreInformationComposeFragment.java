@@ -73,7 +73,6 @@ import pub.devrel.easypermissions.PermissionRequest;
 public class MoreInformationComposeFragment extends Fragment implements EasyPermissions.PermissionCallbacks{
 
     private static final int RC_LOCATION = 33;
-    // Used for selecting the current place.
     private static final int M_MAX_ENTRIES = 5;
     private String[] likelyPlaceNames;
     private Place[] likelyPlace;
