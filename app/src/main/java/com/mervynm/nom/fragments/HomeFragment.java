@@ -60,14 +60,13 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
     Toolbar toolbar;
     SearchView searchView;
     SwipeRefreshLayout swipeContainer;
-    FusedLocationProviderClient fusedLocationProviderClient;
     RecyclerView recyclerViewPosts;
     List<Post> posts;
     PostAdapter adapter;
+    FusedLocationProviderClient fusedLocationProviderClient;
     int lastSortUsed = 0;
 
-    public HomeFragment() {
-    }
+    public HomeFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -216,7 +215,6 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
             public boolean onQueryTextSubmit(String query) {
                 return false;
             }
-
             @Override
             public boolean onQueryTextChange(String newText) {
                 adapter.getFilter().filter(newText);

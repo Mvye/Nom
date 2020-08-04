@@ -20,11 +20,15 @@
         android:id="@+id/textViewUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginStart="10dp"
+        android:paddingEnd="20dp"
+        android:textColor="#000000"
         android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewProfilePicture"
         app:layout_constraintStart_toEndOf="@+id/imageViewProfilePicture"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewProfilePicture"
+        tools:ignore="RtlSymmetry"
         tools:text="mervyn" />
     <ImageView
         android:id="@+id/imageViewPostImage"
@@ -81,38 +85,37 @@
         android:id="@+id/textViewLikeAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
+        android:layout_marginStart="10dp"
+        android:paddingEnd="20dp"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageViewLike"
-        tools:text="19 Likes" />
-    <TextView
-        android:id="@+id/textViewUsername2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewLikeAmount"
-        tools:text="mervyn" />
+        tools:text="19 Likes"
+        tools:ignore="RtlSymmetry" />
     <TextView
         android:id="@+id/textViewDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="10dp"
+        android:paddingEnd="20dp"
+        android:textColor="#000000"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewUsername2"
-        tools:text="@string/descriptionSampleText" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewLikeAmount"
+        tools:text="@string/descriptionSampleText"
+        tools:ignore="RtlSymmetry" />
     <TextView
         android:id="@+id/textViewCreatedAt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="5dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="5dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewDescription"
-        tools:text="5 days ago" />
+        tools:text="5 days ago"
+        tools:ignore="RtlSymmetry" />
     <com.hootsuite.nachos.NachoTextView
         android:id="@+id/nachoTextViewTags"
         android:layout_width="match_parent"

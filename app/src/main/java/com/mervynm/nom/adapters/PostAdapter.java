@@ -2,6 +2,9 @@ package com.mervynm.nom.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Typeface;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +23,7 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.target.Target;
 import com.hootsuite.nachos.NachoTextView;
 import com.mervynm.nom.R;
+import com.mervynm.nom.external.TimeFormatter;
 import com.mervynm.nom.models.Post;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -248,7 +252,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
             imageViewPrice = itemView.findViewById(R.id.imageViewPrice);
             imageViewRecipe = itemView.findViewById(R.id.imageViewRecipe);
             textViewLikeAmount = itemView.findViewById(R.id.textViewLikeAmount);
-            textViewUsername2 = itemView.findViewById(R.id.textViewUsername2);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
             textViewCreatedAt = itemView.findViewById(R.id.textViewCreatedAt);
             nachoTextViewTags = itemView.findViewById(R.id.nachoTextViewTags);
@@ -388,9 +391,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
                     }
                 });
             }
-            textViewUsername2.setText(username);
-            textViewDescription.setText(post.getDescription());
-            textViewCreatedAt.setText(post.getCreatedAt().toString());
+            SpannableString usernameAndDescription = new SpannableString(username + " " + post.getDescription());
+            usernameAndDescription.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            textViewDescription.setText(usernameAndDescription);
+            textViewCreatedAt.setText(TimeFormatter.getTimeStamp(post.getCreatedAt().toString()));
             if (!post.getTags().isEmpty()) {
                 nachoTextViewTags.setVisibility(View.VISIBLE);
                 nachoTextViewTags.setText(post.getTags());
