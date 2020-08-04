@@ -19,12 +19,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.brouding.doubletaplikeview.DoubleTapLikeView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.target.Target;
 import com.hootsuite.nachos.NachoTextView;
 import com.mervynm.nom.R;
-import com.mervynm.nom.external.OnDoubleTapListener;
 import com.mervynm.nom.external.TimeFormatter;
 import com.mervynm.nom.models.Post;
 import com.parse.GetCallback;
@@ -234,7 +234,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
         ImageView imageViewPrice;
         ImageView imageViewRecipe;
         TextView textViewLikeAmount;
-        TextView textViewUsername2;
+        DoubleTapLikeView doubleTapLike;
         TextView textViewDescription;
         TextView textViewCreatedAt;
         NachoTextView nachoTextViewTags;
@@ -249,6 +249,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
             imageViewProfilePicture = itemView.findViewById(R.id.imageViewProfilePicture);
             textViewUsername = itemView.findViewById(R.id.textViewUsername);
             imageViewPostImage = itemView.findViewById(R.id.imageViewPostImage);
+            doubleTapLike = itemView.findViewById(R.id.doubleTapLike);
             imageViewLike = itemView.findViewById(R.id.imageViewLike);
             imageViewLocation = itemView.findViewById(R.id.imageViewLocation);
             imageViewPrice = itemView.findViewById(R.id.imageViewPrice);
@@ -263,7 +264,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
             imageViewLike.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    onLikeClick();
+                    onLikeClick(false);
                 }
             });
             imageViewPrice.setOnClickListener(new View.OnClickListener() {
@@ -280,9 +281,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
             });
         }
 
-        private void onLikeClick() {
+        private void onLikeClick(final boolean isDoubleTap) {
             imageViewLike.setClickable(false);
-            imageViewPostImage.setClickable(false);
+            doubleTapLike.setClickable(false);
             final Post clickedPost = posts.get(getAdapterPosition());
             final boolean[] noIssuesWithSaving = {true};
             ParseQuery<ParseUser> query = clickedPost.getUsersWhoLiked().getQuery();
@@ -292,6 +293,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
                 @Override
                 public void done(ParseUser object, ParseException e) {
                     if (e == null) {
+                        if (isDoubleTap) {
+                            imageViewLike.setImageResource(R.drawable.ic_baseline_favorite_24);
+                            imageViewLike.setClickable(true);
+                            doubleTapLike.setClickable(true);
+                            return;
+                        }
                         changeLike(clickedPost, -1);
                         clickedPost.removeLike(ParseUser.getCurrentUser());
                     }
@@ -314,7 +321,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
                         });
                     }
                     imageViewLike.setClickable(true);
-                    imageViewPostImage.setClickable(false);
+                    doubleTapLike.setClickable(true);
                 }
             });
         }
@@ -347,13 +354,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
                                .into(imageViewProfilePicture);
             String username = post.getAuthor().getUsername();
             textViewUsername.setText(username);
-            Glide.with(context).load(post.getImage().getUrl())
+            String postImageUrl = post.getImage().getUrl();
+            Glide.with(context).load(postImageUrl)
                                .override(Target.SIZE_ORIGINAL)
                                .into(imageViewPostImage);
-            imageViewPostImage.setOnTouchListener(new OnDoubleTapListener(context) {
+            Glide.with(context).load(postImageUrl)
+                    .override(Target.SIZE_ORIGINAL)
+                    .into(doubleTapLike.imageView);
+            doubleTapLike.getLayoutParams().height = imageViewPostImage.getLayoutParams().height;
+            doubleTapLike.setOnTapListener(new DoubleTapLikeView.OnTapListener() {
                 @Override
-                public void onDoubleTap(MotionEvent e) {
-                    onLikeClick();
+                public void onDoubleTap(View view) {
+                    onLikeClick(true);
+                }
+                @Override
+                public void onTap() {
                 }
             });
             if (post.getLocation() != null) {
