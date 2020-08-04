@@ -276,6 +276,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
         }
 
         private void onLikeClick() {
+            imageViewLike.setClickable(false);
             final Post clickedPost = posts.get(getAdapterPosition());
             final boolean[] noIssuesWithSaving = {true};
             ParseQuery<ParseUser> query = clickedPost.getUsersWhoLiked().getQuery();
@@ -296,18 +297,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
                         Toast.makeText(context, "Error, cannot like " + e.getCode(), Toast.LENGTH_SHORT).show();
                         noIssuesWithSaving[0] = false;
                     }
+                    if (noIssuesWithSaving[0]) {
+                        clickedPost.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e != null) {
+                                    Log.i("PostAdapter", "Error in liking");
+                                }
+                            }
+                        });
+                    }
+                    imageViewLike.setClickable(true);
                 }
             });
-            if (noIssuesWithSaving[0]) {
-                clickedPost.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e != null) {
-                            Log.i("PostAdapter", "Error in liking");
-                        }
-                    }
-                });
-            }
         }
 
         @SuppressLint("DefaultLocale")
