@@ -47,6 +47,7 @@ import com.parse.ParseQuery;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,6 +58,7 @@ public class MapViewActivity extends AppCompatActivity implements OnMapReadyCall
     MaterialToolbar toolbarBackButton;
     private GoogleMap map;
     FusedLocationProviderClient fusedLocationProviderClient;
+    List<String> usedLocations = new ArrayList<>();
     boolean isFirstClick = true;
 
     @Override
@@ -123,7 +125,7 @@ public class MapViewActivity extends AppCompatActivity implements OnMapReadyCall
                     android.location.Location lastKnownLocation = task.getResult();
                     if (lastKnownLocation != null) {
                         map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude())));
-                        Log.i("HomeFragment", "the coords are " + lastKnownLocation.getLatitude() + " " + lastKnownLocation.getLongitude());
+                        Log.i("MapViewActivity", "the coords are " + lastKnownLocation.getLatitude() + " " + lastKnownLocation.getLongitude());
                     }
                 }
             }
@@ -139,6 +141,12 @@ public class MapViewActivity extends AppCompatActivity implements OnMapReadyCall
             public void done(List<Post> postList, ParseException e) {
                 for (Post post: postList) {
                     Location postLocation = post.getLocation();
+                    if (usedLocations.contains(postLocation.getObjectId())) {
+                        continue;
+                    }
+                    else {
+                        usedLocations.add(postLocation.getObjectId());
+                    }
                     ParseGeoPoint latLong = null;
                     try {
                         latLong = post.getLocation().fetchIfNeeded().getParseGeoPoint("latLong");
