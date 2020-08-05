@@ -1,6 +1,7 @@
 package com.mervynm.nom;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -20,7 +21,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -53,6 +57,7 @@ public class MapViewActivity extends AppCompatActivity implements OnMapReadyCall
     MaterialToolbar toolbarBackButton;
     private GoogleMap map;
     FusedLocationProviderClient fusedLocationProviderClient;
+    boolean isFirstClick = true;
 
     @Override
     public void onBackPressed() {
@@ -99,6 +104,7 @@ public class MapViewActivity extends AppCompatActivity implements OnMapReadyCall
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
+                isFirstClick = true;
                 marker.showInfoWindow();
                 return true;
             }
@@ -167,7 +173,7 @@ public class MapViewActivity extends AppCompatActivity implements OnMapReadyCall
     }
 
     @Override
-    public View getInfoContents(Marker marker) {
+    public View getInfoContents(final Marker marker) {
         Log.i("MapViewActivity", "marker shown");
         @SuppressLint("InflateParams") View view = getLayoutInflater().inflate(R.layout.post_info_window, null);
         ImageView imageViewProfilePicture = view.findViewById(R.id.imageViewProfilePicture);
@@ -179,12 +185,39 @@ public class MapViewActivity extends AppCompatActivity implements OnMapReadyCall
         String profilePictureUrl = Objects.requireNonNull(clickedPost.getAuthor().getParseFile("profilePicture")).getUrl();
         Glide.with(this).load(profilePictureUrl)
                 .transform(new CircleCrop())
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        return false;
+                    }
+                })
                 .into(imageViewProfilePicture);
         String username = clickedPost.getAuthor().getUsername();
         textViewUsername.setText(username);
         String postImageUrl = clickedPost.getImage().getUrl();
         Glide.with(this).load(postImageUrl)
                 .override(Target.SIZE_ORIGINAL)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        if (isFirstClick) {
+                            isFirstClick = false;
+                            marker.hideInfoWindow();
+                            marker.showInfoWindow();
+                        }
+                        return false;
+                    }
+                })
                 .into(imageViewPostImage);
         SpannableString usernameAndDescription = new SpannableString(username + " " + clickedPost.getDescription());
         usernameAndDescription.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, username.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
