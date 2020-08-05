@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ComposeActivity">
+    tools:context=".MapViewActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbarBackButton"
@@ -20,11 +20,12 @@
         app:subtitleTextColor="#FFFFFF"
         app:title="Nom"
         app:titleTextColor="#FFFFFF" />
-    <FrameLayout
-        android:id="@+id/frameLayoutContainer"
+    <fragment
+        android:id="@+id/mapView"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarBackButton">
-    </FrameLayout>
+        app:layout_constraintTop_toBottomOf="@+id/toolbarBackButton"
+        tools:context=".MapViewActivity" />
 </androidx.constraintlayout.widget.ConstraintLayout>

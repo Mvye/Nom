@@ -77,6 +77,12 @@ public class MainActivity extends AppCompatActivity {
                 if (item.getItemId() == R.id.action_home) {
                     fragment = new HomeFragment();
                 }
+                else if (item.getItemId() == R.id.action_map_view) {
+                    Intent i = new Intent(getApplicationContext(), MapViewActivity.class);
+                    startActivity(i);
+                    overridePendingTransition(R.anim.right_in, R.anim.left_out);
+                    return true;
+                }
                 else if (item.getItemId() == R.id.action_compose) {
                     Intent i = new Intent(getApplicationContext(), ComposeActivity.class);
                     startActivity(i);
