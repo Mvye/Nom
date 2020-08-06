@@ -32,6 +32,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -44,6 +45,7 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import org.w3c.dom.Text;
 
@@ -158,6 +160,9 @@ public class MapViewActivity extends AppCompatActivity implements OnMapReadyCall
                         Marker m = googleMap.addMarker(new MarkerOptions()
                                  .position(postLatLong));
                         m.setTag(post);
+                        if (post.getAuthor().getUsername().equals(ParseUser.getCurrentUser().getUsername())) {
+                            m.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                        }
                     }
                 }
                 setUpInfoWindow();
