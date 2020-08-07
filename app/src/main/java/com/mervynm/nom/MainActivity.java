@@ -10,6 +10,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,10 +24,14 @@ import com.mervynm.nom.fragments.HomeFragment;
 import com.mervynm.nom.fragments.LogoutDialogFragment;
 import com.mervynm.nom.fragments.ProfileFragment;
 
+import java.util.Stack;
+
 public class MainActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationBar;
     final FragmentManager fragmentManager = getSupportFragmentManager();
+    Stack<String> openedFragments;
+    String currentFragment;
 
     @Override
     public void onBackPressed() {
@@ -36,6 +41,22 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             fragmentManager.popBackStack();
+            if (openedFragments.peek() != null) {
+                currentFragment = openedFragments.pop();
+                if (openedFragments.peek() != null) {
+                    if (openedFragments.peek().equals("Home")) {
+                        bottomNavigationBar.getMenu().findItem(R.id.action_home).setChecked(true);
+                        openedFragments.pop();
+                        Log.i("MainActivity", "removed home from backstack");
+                    }
+                    else if (openedFragments.peek().equals("Profile")) {
+                        bottomNavigationBar.getMenu().findItem(R.id.action_profile).setChecked(true);
+                        openedFragments.pop();
+                        Log.i("MainActivity", "removed profile from backstack");
+                    }
+                }
+                openedFragments.push(currentFragment);
+            }
         }
     }
 
@@ -58,6 +79,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        setCheckedBottomNav();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -66,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupVariables() {
+        openedFragments = new Stack<>();
         bottomNavigationBar = findViewById(R.id.bottom_navigation);
     }
 
@@ -76,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
                 Fragment fragment = new HomeFragment();
                 if (item.getItemId() == R.id.action_home) {
                     fragment = new HomeFragment();
+                    openedFragments.push("Home");
+                    Log.i("MainActivity", "added home to backstack");
                 }
                 else if (item.getItemId() == R.id.action_map_view) {
                     Intent i = new Intent(getApplicationContext(), MapViewActivity.class);
@@ -91,11 +121,27 @@ public class MainActivity extends AppCompatActivity {
                 }
                 else if (item.getItemId() == R.id.action_profile) {
                     fragment = new ProfileFragment();
+                    openedFragments.push("Profile");
+                    Log.i("MainActivity", "added profile to backstack");
                 }
                 fragmentManager.beginTransaction().replace(R.id.frameLayoutContainer, fragment).addToBackStack("").commit();
                 return true;
             }
         });
         bottomNavigationBar.setSelectedItemId(R.id.action_home);
+    }
+
+    private void setCheckedBottomNav() {
+        if (openedFragments.peek() != null) {
+            Log.i("MainActivity", "does it reach x1");
+            if (openedFragments.peek().equals("Home")) {
+                Log.i("MainActivity", "does it reach x2");
+                bottomNavigationBar.getMenu().findItem(R.id.action_home).setChecked(true);
+            }
+            else if (openedFragments.peek().equals("Profile")) {
+                Log.i("MainActivity", "does it reach x3");
+                bottomNavigationBar.getMenu().findItem(R.id.action_profile).setChecked(true);
+            }
+        }
     }
 }
