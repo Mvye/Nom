@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -135,6 +136,16 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
     private void setupRecyclerView(View view) {
         recyclerViewPosts = view.findViewById(R.id.recyclerViewPosts);
         posts = new ArrayList<>();
+        PostAdapter.OnProfilePictureClickListener onProfilePictureClickListener = new PostAdapter.OnProfilePictureClickListener() {
+            @Override
+            public void OnProfilePictureClicked(int position) {
+                try {
+                    openProfileView(posts.get(position));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
         PostAdapter.OnLocationClickListener onLocationClickListener = new PostAdapter.OnLocationClickListener() {
             @Override
             public void OnLocationClicked(int position) {
@@ -145,15 +156,22 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
                 }
             }
         };
-        PostAdapter.OnRecipieClickListener onRecipieClickListener = new PostAdapter.OnRecipieClickListener() {
+        PostAdapter.OnRecipeClickListener onRecipeClickListener = new PostAdapter.OnRecipeClickListener() {
             @Override
             public void OnRecipeClicked(int position) {
                 createRecipeDialog(posts.get(position));
             }
         };
-        adapter = new PostAdapter(getContext(), posts, onLocationClickListener, onRecipieClickListener);
+        adapter = new PostAdapter(getContext(), posts, onProfilePictureClickListener, onLocationClickListener, onRecipeClickListener);
         recyclerViewPosts.setAdapter(adapter);
         recyclerViewPosts.setLayoutManager(new LinearLayoutManager(getContext()));
+    }
+
+    private void openProfileView(Post post) throws ParseException {
+        ParseUser clickedPostsUser = post.getAuthor().fetchIfNeeded();
+        ProfileFragment profileFragment = ProfileFragment.newInstance(clickedPostsUser);
+        assert getFragmentManager() != null;
+        getFragmentManager().beginTransaction().replace(R.id.frameLayoutContainer, profileFragment).addToBackStack("").commit();
     }
 
     private void createLocationDialog(Post post) throws ParseException {

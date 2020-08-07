@@ -23,6 +23,7 @@ import com.mervynm.nom.fragments.ComposeFragment;
 import com.mervynm.nom.fragments.HomeFragment;
 import com.mervynm.nom.fragments.LogoutDialogFragment;
 import com.mervynm.nom.fragments.ProfileFragment;
+import com.parse.ParseUser;
 
 import java.util.Stack;
 
@@ -41,9 +42,9 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             fragmentManager.popBackStack();
-            if (openedFragments.peek() != null) {
+            if (!openedFragments.empty()) {
                 currentFragment = openedFragments.pop();
-                if (openedFragments.peek() != null) {
+                if (!openedFragments.empty()) {
                     if (openedFragments.peek().equals("Home")) {
                         bottomNavigationBar.getMenu().findItem(R.id.action_home).setChecked(true);
                         openedFragments.pop();
@@ -120,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
                 else if (item.getItemId() == R.id.action_profile) {
-                    fragment = new ProfileFragment();
+                    fragment = ProfileFragment.newInstance(ParseUser.getCurrentUser());
                     openedFragments.push("Profile");
                     Log.i("MainActivity", "added profile to backstack");
                 }

@@ -3,6 +3,7 @@ package com.mervynm.nom.adapters;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.graphics.drawable.AnimationDrawable;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.util.Log;
@@ -40,13 +41,17 @@ import java.util.List;
 import java.util.Objects;
 import java.util.TreeMap;
 
-public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> implements Filterable{
+public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> implements Filterable {
+
+    public interface OnProfilePictureClickListener {
+        void OnProfilePictureClicked(int position);
+    }
 
     public interface OnLocationClickListener {
         void OnLocationClicked(int position);
     }
 
-    public interface OnRecipieClickListener {
+    public interface OnRecipeClickListener {
         void OnRecipeClicked(int position);
     }
 
@@ -55,15 +60,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
     List<Post> postListFull;
     List<Post> postsCreatedAt;
     OnLocationClickListener locationClickListener;
-    OnRecipieClickListener recipieClickListener;
+    OnRecipeClickListener recipeClickListener;
+    OnProfilePictureClickListener profilePictureClickListener;
 
-    public PostAdapter(Context context, List<Post> posts, OnLocationClickListener locationClickListener, OnRecipieClickListener recipieClickListener) {
+    public PostAdapter(Context context, List<Post> posts, OnProfilePictureClickListener profilePictureClickListener,
+                                                          OnLocationClickListener locationClickListener,
+                                                          OnRecipeClickListener recipeClickListener) {
         this.context = context;
         this.posts = posts;
         postListFull = new ArrayList<>(posts);
         postsCreatedAt = new ArrayList<>(posts);
+        this.profilePictureClickListener = profilePictureClickListener;
         this.locationClickListener = locationClickListener;
-        this.recipieClickListener = recipieClickListener;
+        this.recipeClickListener = recipeClickListener;
     }
 
     @NonNull
@@ -364,6 +373,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
             Glide.with(context).load(Objects.requireNonNull(post.getAuthor().getParseFile("profilePicture")).getUrl())
                                .transform(new CircleCrop())
                                .into(imageViewProfilePicture);
+            imageViewProfilePicture.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    profilePictureClickListener.OnProfilePictureClicked(getAdapterPosition());
+                }
+            });
             String username = post.getAuthor().getUsername();
             textViewUsername.setText(username);
             String postImageUrl = post.getImage().getUrl();
@@ -426,7 +441,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
                 imageViewRecipe.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        recipieClickListener.OnRecipeClicked(getAdapterPosition());
+                        recipeClickListener.OnRecipeClicked(getAdapterPosition());
                     }
                 });
             }

@@ -30,12 +30,23 @@ public class ProfileFragment extends HomeFragment {
     ImageView imageViewProfilePicture;
     TextView textViewUsername;
     RecyclerView recyclerViewPosts;
+    ParseUser userOfProfile;
 
     public ProfileFragment() {}
+
+    public static ProfileFragment newInstance(ParseUser user) {
+        ProfileFragment profileFragment = new ProfileFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("user", user);
+        profileFragment.setArguments(args);
+        return profileFragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        assert getArguments() != null;
+        userOfProfile = getArguments().getParcelable("user");
     }
 
     @Override
@@ -51,11 +62,10 @@ public class ProfileFragment extends HomeFragment {
 
     @Override
     protected void setupToolbar(View view) {
-        ParseUser user = ParseUser.getCurrentUser();
-        Glide.with(Objects.requireNonNull(getContext())).load(Objects.requireNonNull(user.getParseFile("profilePicture")).getUrl())
+        Glide.with(Objects.requireNonNull(getContext())).load(Objects.requireNonNull(userOfProfile.getParseFile("profilePicture")).getUrl())
                 .transform(new CircleCrop())
                 .into(imageViewProfilePicture);
-        textViewUsername.setText(user.getUsername());
+        textViewUsername.setText(userOfProfile.getUsername());
     }
 
     public void setupVariables(View view) {
@@ -68,7 +78,7 @@ public class ProfileFragment extends HomeFragment {
     protected void queryPosts() {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.include(Post.KEY_AUTHOR);
-        query.whereEqualTo(Post.KEY_AUTHOR, ParseUser.getCurrentUser());
+        query.whereEqualTo(Post.KEY_AUTHOR, userOfProfile);
         query.addDescendingOrder(Post.KEY_CREATED_AT);
         query.findInBackground(new FindCallback<Post>() {
             @Override
