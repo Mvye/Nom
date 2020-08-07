@@ -189,12 +189,12 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
         toolbar = view.findViewById(R.id.toolbar);
         Drawable drawable = getResources().getDrawable(R.drawable.ic_sort);
         toolbar.setOverflowIcon(drawable);
-        toolbar.getMenu().findItem(R.id.sortCreatedAt).setTitle(getSpannableString(getResources().getString(R.string.sort_by_date_created)));
+        toolbar.getMenu().findItem(R.id.sortCreatedAt).setTitle(getSpannableColoredString(getResources().getString(R.string.sort_by_date_created)));
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 setMenuItemsToNormal();
-                item.setTitle(getSpannableString(item.getTitle()));
+                item.setTitle(getSpannableColoredString(item.getTitle()));
                 if (item.getItemId() == R.id.sortCreatedAt) {
                     sortByCreatedAt();
                     lastSortUsed = 0;
@@ -217,6 +217,8 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
             }
             @Override
             public boolean onQueryTextChange(String newText) {
+                setMenuItemsToNormal();
+                toolbar.getMenu().findItem(R.id.sortCreatedAt).setTitle(getSpannableColoredString(getResources().getString(R.string.sort_by_date_created)));
                 adapter.getFilter().filter(newText);
                 return false;
             }
@@ -229,7 +231,7 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
         toolbar.getMenu().findItem(R.id.sortDistance).setTitle(getResources().getString(R.string.sort_by_distance_from_me));
     }
 
-    private SpannableString getSpannableString(CharSequence title) {
+    private SpannableString getSpannableColoredString(CharSequence title) {
         SpannableString spannableString = new SpannableString(title.toString());
         spannableString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorPrimary)), 0, spannableString.length(), 0);
         return spannableString;
@@ -289,10 +291,10 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
     private void changeColoredMenuItem() {
         setMenuItemsToNormal();
         if (lastSortUsed == 0) {
-            toolbar.getMenu().findItem(R.id.sortCreatedAt).setTitle(getSpannableString(getResources().getString(R.string.sort_by_date_created)));
+            toolbar.getMenu().findItem(R.id.sortCreatedAt).setTitle(getSpannableColoredString(getResources().getString(R.string.sort_by_date_created)));
         }
         else {
-            toolbar.getMenu().findItem(R.id.sortPrice).setTitle(getSpannableString(getResources().getString(R.string.sort_by_price)));
+            toolbar.getMenu().findItem(R.id.sortPrice).setTitle(getSpannableColoredString(getResources().getString(R.string.sort_by_price)));
         }
     }
 
