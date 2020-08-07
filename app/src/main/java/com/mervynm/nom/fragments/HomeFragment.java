@@ -217,9 +217,13 @@ public class HomeFragment extends Fragment implements EasyPermissions.Permission
             }
             @Override
             public boolean onQueryTextChange(String newText) {
+                swipeContainer.setEnabled(false);
                 setMenuItemsToNormal();
                 toolbar.getMenu().findItem(R.id.sortCreatedAt).setTitle(getSpannableColoredString(getResources().getString(R.string.sort_by_date_created)));
                 adapter.getFilter().filter(newText);
+                if (newText.equals("")) {
+                    swipeContainer.setEnabled(true);
+                }
                 return false;
             }
         });

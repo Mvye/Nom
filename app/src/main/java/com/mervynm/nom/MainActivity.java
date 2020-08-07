@@ -133,13 +133,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void setCheckedBottomNav() {
         if (openedFragments.peek() != null) {
-            Log.i("MainActivity", "does it reach x1");
             if (openedFragments.peek().equals("Home")) {
-                Log.i("MainActivity", "does it reach x2");
                 bottomNavigationBar.getMenu().findItem(R.id.action_home).setChecked(true);
             }
             else if (openedFragments.peek().equals("Profile")) {
-                Log.i("MainActivity", "does it reach x3");
                 bottomNavigationBar.getMenu().findItem(R.id.action_profile).setChecked(true);
             }
         }
