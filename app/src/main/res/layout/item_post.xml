@@ -87,12 +87,12 @@
         android:id="@+id/imageViewRecipe"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginStart="5dp"
         android:layout_marginTop="5dp"
-        app:layout_constraintStart_toEndOf="@+id/imageViewPrice"
+        android:layout_marginStart="5dp"
+        android:contentDescription="@string/recipe_icon"
+        app:layout_constraintStart_toEndOf="@+id/textViewPriceAmount"
         app:layout_constraintTop_toBottomOf="@+id/imageViewPostImage"
-        app:srcCompat="@drawable/ic_baseline_link_24"
-        android:contentDescription="@string/recipe_icon" />
+        app:srcCompat="@drawable/ic_baseline_link_24" />
     <TextView
         android:id="@+id/textViewLikeAmount"
         android:layout_width="wrap_content"
@@ -104,6 +104,18 @@
         app:layout_constraintTop_toBottomOf="@+id/imageViewLike"
         tools:text="19 Likes"
         tools:ignore="RtlSymmetry" />
+    <TextView
+        android:id="@+id/textViewPriceAmount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewPrice"
+        app:layout_constraintStart_toEndOf="@+id/imageViewPrice"
+        app:layout_constraintTop_toTopOf="@+id/imageViewPrice"
+        tools:ignore="RtlSymmetry"
+        tools:text="$33.99" />
     <TextView
         android:id="@+id/textViewDescription"
         android:layout_width="wrap_content"

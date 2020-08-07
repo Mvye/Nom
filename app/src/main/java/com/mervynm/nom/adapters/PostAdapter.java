@@ -234,6 +234,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
         ImageView imageViewPrice;
         ImageView imageViewRecipe;
         TextView textViewLikeAmount;
+        TextView textViewPriceAmount;
         DoubleTapLikeView doubleTapLike;
         TextView textViewDescription;
         TextView textViewCreatedAt;
@@ -255,6 +256,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
             imageViewPrice = itemView.findViewById(R.id.imageViewPrice);
             imageViewRecipe = itemView.findViewById(R.id.imageViewRecipe);
             textViewLikeAmount = itemView.findViewById(R.id.textViewLikeAmount);
+            textViewPriceAmount = itemView.findViewById(R.id.textViewPriceAmount);
+            textViewPriceAmount.setVisibility(View.GONE);
             textViewDescription = itemView.findViewById(R.id.textViewDescription);
             textViewCreatedAt = itemView.findViewById(R.id.textViewCreatedAt);
             nachoTextViewTags = itemView.findViewById(R.id.nachoTextViewTags);
@@ -340,7 +343,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
 
         private void onPriceClick() {
             Post clickedPost = posts.get(getAdapterPosition());
-            Toast.makeText(context, "The price is $" + clickedPost.getPrice(), Toast.LENGTH_SHORT).show();
+            if (textViewPriceAmount.getVisibility() == View.GONE) {
+                textViewPriceAmount.setVisibility(View.VISIBLE);
+                imageViewPrice.setImageResource(R.drawable.ic_money_clicked);
+                textViewPriceAmount.setText(String.format("$%s", clickedPost.getPrice()));
+            }
+            else {
+                textViewPriceAmount.setVisibility(View.GONE);
+                imageViewPrice.setImageResource(R.drawable.ic_baseline_attach_money_24);
+                textViewPriceAmount.setText("");
+            }
         }
 
         private void onRecipeClick() {
@@ -398,6 +410,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> im
                 }
             });
             textViewLikeAmount.setText(String.format("%d Likes", post.getLikeCount()));
+            textViewPriceAmount.setVisibility(View.GONE);
+            imageViewPrice.setImageResource(R.drawable.ic_baseline_attach_money_24);
             if (post.getPrice() == 0) {
                 imageViewPrice.setVisibility(View.GONE);
             }
