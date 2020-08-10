@@ -1,8 +1,5 @@
-Original App Design Project - README
+nÖm
 ===
-
-# Nom
-
 ## Table of Contents
 1. [Overview](#Overview)
 1. [Product Spec](#Product-Spec)
@@ -28,34 +25,37 @@ Social media app centered around food. Users can take and share pictures of thei
 
 **Required Must-have Stories**
 
-1. User can take pictures with the app
-2. User can make posts 
-    a. Posts are required to have an image, description, and (new idea) boolean representing whether or not it’s homemade
-    b. Posts can optionally have price, location (if it’s not homemade), and recipe (if it’s homemade)
-    c. Posts can optionally have tags that can help with searching, like if it’s spicy, sweet, sour, Mexican, healthy [I’m thinking this could be an Array of Strings]
-3. Users can like other user’s posts (potentially should be a stretch feature?)
-4. User can search for posts via tags (using queryManager), sorting home feed (optional, backup complex algorithm)
-5. There’s three different main views (fragments) accessible with bottom nav bar
-    a. HomeFeed -  list of posts made by user’s the current user is following and the user
-    b. NewPost - allows user to take a picture and add a description. Can add optional location, price, and recipe. 
-    c. Profile - shows a user’s profile including their username, profile picture (stretch story?), as well as a list of posts they’ve made
-6. User can double tap to like a post (iffy on this), User can scroll to refresh HomeFeed
-7. [Here would be stories that incorporate external libraries for visual polish and animations]
+- [x] User can take pictures with the app
+- [x] User can make posts 
+    - [x] Posts are required to have an image, description, whether the post is homemade or not
+    - [x] Posts can optionally have price, location, and recipe (if it’s homemade)
+    - [x] Posts can optionally have tags that can help with searching, like if it’s spicy, sweet, Japanese, etc.
+- [x] Users can like other user’s posts
+- [x] User can search for posts via tags
+- [x] There’s three different main views (fragments) accessible with bottom nav bar
+    - [x] HomeFeed -  list of posts made by user’s the current user is following and the user
+    - [x] NewPost - allows user to take a picture and add a description. Can add optional location, price, and recipe. 
+    - [x] Profile - shows a user’s profile including their username, profile picture, as well as a list of posts they’ve made
+- [x] User can double tap to like a post (shows a like animation with external library), User can scroll to refresh HomeFeed
 
 **Optional Nice-to-have Stories**
 
-* 1. User can edit their own posts
-* 2. User can click on a post for a detailed post view
-* 3. User can click on a posts user’s profile picture to go to their profile
-* 4. Allow user to choose an image from gallery when making a post
+- [ ] User can edit their own posts
+- [ ] User can click on a post for a detailed post view
+- [x] User can click on a posts user’s profile picture to go to their profile
+- [x] Created a Map View in which you can view posts as markers on a map
+- [x] Users have two different methods to add locations
+- [x] 
 
 ### 2. Screen Archetypes
 
 * LoginActivity
-* MainActivity with bottom navigation bar
+* MainActivity
 * HomeFragment
-* NewPostFragment1
-* NewPostFragment2
+* MapViewActivity
+* ComposeActivity
+    * ComposeFragment
+    * MoreInformationComposeFragment
 * ProfileFragment
 
 ### 3. Navigation
@@ -63,31 +63,34 @@ Social media app centered around food. Users can take and share pictures of thei
 **Tab Navigation** (Tab to Screen)
 
 * Profile
-* New Post
+* Compose new Post
+* MapView
 * Home
 
 **Flow Navigation** (Screen to Screen)
 
+* Login
+   * login button to go to HomeFragment
 * Home
    * Profile
-   * New Post
-* New Post
-    * Camera
-    * Home (cancel)
-    * New Post2
-* New Post 2
-    * Home (after posting the post, brings you to home)
+   * Compose new Post
+   * MapViewActivity
+* MapViewActivity
+   * back button to return to HomeFragment
+* Compose new Post
+    * back button to return to HomeFragment
+* MoreInformationComposeFragment
+    * back button to return to ComposeFragment
+    * post button to go to HomeFragment
 * Profile
     * Home 
-    * New Post
+    * Compose new Post
+    * MapViewActivity
 
 ## Wireframes
-[Must be Updated]
-[]()
 <img src="https://i.imgur.com/Q3num9P.jpg" width=600>
 
 ## Schema 
-[This section will be completed in Unit 9]
 ### Models
 **Posts**
 | Property    | Type   | Description                             |
