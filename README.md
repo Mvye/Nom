@@ -40,12 +40,11 @@ Social media app centered around food. Users can take and share pictures of thei
 
 **Optional Nice-to-have Stories**
 
-- [ ] User can edit their own posts
-- [ ] User can click on a post for a detailed post view
+- [x] Users can sort posts by price or distance from them
+- [x] Users can follow other users through their profiles
 - [x] User can click on a posts user’s profile picture to go to their profile
 - [x] Created a Map View in which you can view posts as markers on a map
-- [x] Users have two different methods to add locations
-- [x] 
+- [x] Users have two different methods to add locations 
 
 ### 2. Screen Archetypes
 
