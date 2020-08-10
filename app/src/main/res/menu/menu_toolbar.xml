@@ -16,6 +16,4 @@
     <item
         android:id="@+id/sortDistance"
         android:title="@string/sort_by_distance_from_me"/>
-    <group />
-
 </menu>

@@ -136,6 +136,7 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setupVariables(view);
+        showRecipeIfHomemade();
         setupNachoTextView();
         initializePlaces();
         setUpAutocompleteSupportFragment();
@@ -150,6 +151,15 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
         editTextPrice = view.findViewById(R.id.editTextPrice);
         nachoTextViewTags = view.findViewById(R.id.nachoTextViewTags);
         buttonPost = view.findViewById(R.id.buttonPost);
+    }
+
+    private void showRecipeIfHomemade() {
+        if (homemade) {
+            editTextRecipe.setVisibility(View.VISIBLE);
+        }
+        else {
+            editTextRecipe.setVisibility(View.GONE);
+        }
     }
 
     private void setupNachoTextView() {
@@ -415,15 +425,6 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
         post.setImage(new ParseFile(photoFile));
         post.setKeyDescription(description);
         post.setHomemade(homemade);
-        if (location) {
-            if (saveLocation()) {
-                post.setLocation(postLocation);
-            }
-            else {
-                Toast.makeText(getContext(), "Location could not be saved", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
         if (recipe) {
             post.setRecipeUrl(recipeUrl);
         }
@@ -433,24 +434,28 @@ public class MoreInformationComposeFragment extends Fragment implements EasyPerm
         if (tag) {
             post.setTags(tags);
         }
-        savePost(post);
+        saveLocation(location, post);
     }
 
-    private boolean saveLocation() {
-        final boolean[] save = {true};
-        postLocation.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Log.e("MoreInfoCompose", "Issue saving location", e);
-                    Toast.makeText(getContext(), "Issue saving location", Toast.LENGTH_SHORT).show();
-                    save[0] = false;
-                    return;
+    private void saveLocation(boolean isThereALocation, final Post post) {
+        if (!isThereALocation) {
+            savePost(post);
+        }
+        else {
+            postLocation.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e != null) {
+                        Log.e("MoreInfoCompose", "Issue saving location", e);
+                        Toast.makeText(getContext(), "Issue saving location", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Log.i("MoreInfoCompose", "Location successfully saved");
+                    post.setLocation(postLocation);
+                    savePost(post);
                 }
-                Log.i("MoreInfoCompose", "Location successfully saved");
-            }
-        });
-        return save[0];
+            });
+        }
     }
 
     private void savePost(Post post) {
